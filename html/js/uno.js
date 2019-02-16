@@ -158,7 +158,13 @@ class Player{
 	}
 
 	registerClick(x,y){
-		
+		for(let i = 0; i < this.cards.length; i++) {
+			let card = this.cards[i];
+			card.isSelected = x > card.x &&
+				y > card.y &&
+				y < card.y + card.height &&
+				x < card.x + card.width * (i === this.cards.length - 1 ? 1 : 0.4);
+		}
 	}
 
 }
@@ -209,7 +215,9 @@ function startGame(){
 			x -= canvas.offsetLeft;
 			y -= canvas.offsetTop;
 
-			console.log(`${x}, ${y}`);
+			for(let i = 0; i < players.length; i++){
+				players[i].registerClick(x, y);
+			}
 		}, false);
 
 		//start the canvas updates
