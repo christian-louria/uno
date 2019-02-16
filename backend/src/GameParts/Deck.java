@@ -15,7 +15,7 @@ public class Deck {
     public Deck(){
 
         // TODO remove seed from actual game
-        this.r = new Random(10);
+        this.r = new Random(15);
     }
 
     /**

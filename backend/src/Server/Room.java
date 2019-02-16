@@ -213,7 +213,22 @@ public class Room {
         }
 
 
+        try {
+            // Grant plays draw two blue on to reverse blue
+            grant.getRoom().playCard(grant, 0, null);
 
+            // tian plays 5 blue on draw two blue
+            grant.getRoom().playCard(tian, 1, null);
+
+            // grant plays 5 red on 5 blue
+            grant.getRoom().playCard(grant, 5, null);
+
+            // Alex plays a wildcard with the replacement as blue
+            grant.getRoom().playCard(alex, 5, Color.BLUE);
+
+        } catch (IllegalCardException e) {
+            e.printStackTrace();
+        }
 
 
         boolean gameOver = grant.getRoom().isGameOver();
