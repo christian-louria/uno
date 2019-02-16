@@ -10,7 +10,7 @@ let canvas;
 let ctx;
 let timer;
 let currentPlayer = "Alex";
-let turn = "Alex"
+let turn = "Alex";
 
 const cardURLs = [
 "0-blue.svg",
@@ -110,26 +110,26 @@ class Player{
 
 			let moveUp = card.isSelected ? 80 : 40;
 
-			if(this.name == currentPlayer){
+			if(this.name === currentPlayer){
 				card.x = startOffset+ i * cardWidth * 0.4;
 				card.y = normalizedHeight - cardHeight - moveUp;
-			} else if (player == 1) {
+			} else if (player === 1) {
 				img = document.getElementById("back.svg");
 				card.x = startOffset+ i * cardWidth * 0.4;
 				card.y = 30;
-			} else if (player == 2) {
-				ctx.translate(normalizedWidth/2, normalizedHeight/2)
+			} else if (player === 2) {
+				ctx.translate(normalizedWidth/2, normalizedHeight/2);
 				ctx.rotate(90 * Math.PI / 180);
-				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+				ctx.translate(-normalizedWidth/2, -normalizedHeight/2);
 				img = document.getElementById("back.svg");
 				card.x = startOffset+ i * cardWidth * 0.4;
 				card.y = -90;
 				
 			}
-			else if (player == 3) {
-				ctx.translate(normalizedWidth/2, normalizedHeight/2)
+			else if (player === 3) {
+				ctx.translate(normalizedWidth/2, normalizedHeight/2);
 				ctx.rotate(-90 * Math.PI / 180);
-				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+				ctx.translate(-normalizedWidth/2, -normalizedHeight/2);
 				img = document.getElementById("back.svg");
 				card.x = startOffset+ i * cardWidth * 0.4;
 				card.y = -90;
@@ -141,13 +141,13 @@ class Player{
 
 			ctx.drawImage(img, card.x, card.y, card.width, card.height);
 
-			if(player == 2){
-				ctx.translate(normalizedWidth/2, normalizedHeight/2)
+			if(player === 2){
+				ctx.translate(normalizedWidth/2, normalizedHeight/2);
 				ctx.rotate(-90 * Math.PI / 180);
 				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
 			}
-			else if (player == 3) {
-				ctx.translate(normalizedWidth/2, normalizedHeight/2)
+			else if (player === 3) {
+				ctx.translate(normalizedWidth/2, normalizedHeight/2);
 				ctx.rotate(90 * Math.PI / 180);
 				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
 				
@@ -318,7 +318,7 @@ const mockGame = [
 
 		]
 	}
-]
+];
 
 $(document).ready(function(){
 
@@ -350,7 +350,7 @@ $(document).ready(function(){
 		if (confirm("Are you sure you want to leave the room")){
 			location.reload()
 		}
-	})
+	});
 
 
 
@@ -358,39 +358,40 @@ $(document).ready(function(){
 	$(document).on("click", "#hostGameButton", function(){
 		window.history.pushState('forward', null, './hostGame');
 		hostGame();
-	})
+	});
 
 	$(document).on("click", "#joinGameButton", function(){
 		window.history.pushState('forward', null, './joinGame');
 		joinGame();
-	})
+	});
 
 
 
 ///Create or join game
+	let $gameNameText = $("#gameNameText");
 	$(document).on("click", "#createRequest", function(){
-		var gameName = $("#gameNameText").val()
+		let gameName = $gameNameText.val();
 
 		/////socket
 		window.history.pushState('forward', null, './ROOMNAME-TODO');
 
-	})
+	});
 
 	$(document).on("click", "#joinRequest", function(){
-		var gameName = $("#gameNameText").val()
+		let gameName = $gameNameTex.val();
 
 		//socket
 		window.history.pushState('forward', null, './ROOMNAME-TODO');
-	})
+	});
 //////////
 	//load in images
 	for(let i = 0; i < cardURLs.length; i++){
-		$("#cards").append(`<img src="/img/cards/SVG/${cardURLs[i]}" id="${cardURLs[i]}" height="0px" width="0px">`);
+		$("#cards").append(`<img src="/img/cards/SVG/${cardURLs[i]}" id="${cardURLs[i]}" height="0px" width="0px" alt="${cardURLs[i]}">`);
 	}
 
 	startGame();
 
-})
+});
 
 //GamePlay
 
@@ -431,15 +432,6 @@ function scaleCanvas(canvas, context, width, height) {
 	context.scale(ratio, ratio);
 }
 
-//get the proper scale for all retina devices
-function backingScale(context) {
-	if ('devicePixelRatio' in window) {
-		if (window.devicePixelRatio > 1) {
-			return window.devicePixelRatio;
-		}
-	}
-	return 1;
-}
 
 function aspectRatio() {
 	let $body = $("body");
@@ -486,19 +478,19 @@ function drawBoard(){
 	// ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
 
 
-	let backCard  = document.getElementById("back.svg")
+	let backCard  = document.getElementById("back.svg");
 	//ctx.
 	ctx.shadowOffsetX = 5;
 	ctx.shadowOffsetY = 5;
 	ctx.shadowColor = 'RGBA(38, 42, 44, .5)';
 	ctx.shadowBlur = 40;
-	ctx.drawImage(backCard, normalizedWidth/2 - 150, normalizedHeight/2  - 50, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.97 - 150, normalizedHeight/2.03 - 50, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/1.98 - 50, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/2 - 150, normalizedHeight/2  - 50, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.97 - 150, normalizedHeight/2.03 - 50, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/1.98 - 50, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight);
 	ctx.shadowOffsetX = 0;
 	ctx.shadowOffsetY = 0;
 	ctx.shadowColor = 'RGBA(0, 0, 0, 0)';
