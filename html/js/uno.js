@@ -73,6 +73,20 @@ class Card{
 		this.color = color;
 		this.image = `${this.type}-${this.color}.svg`;
 	}
+
+	drawCard(ctx, idx, currentPlayer){
+		let normalizedWidth = canvas.width / devicePixelRatio;
+		let normalizedHeight = canvas.height / devicePixelRatio;
+
+		let img =document.getElementById(this.image);
+		if(currentPlayer){
+			const ratio = 0.7;
+			const width = 240 * ratio;
+			const height = 360 * ratio;
+			ctx.drawImage(img, idx*80+5, 0, width, height);
+		}
+
+	}
 }
 
 class Player{
@@ -83,6 +97,14 @@ class Player{
 			this.cards.push(new Card(cards[i].type, cards[i].color));
 		}
 	}
+
+	drawCards(ctx){
+		for(let i = 0; i < this.cards.length; i++){
+			let card = this.cards[i];
+			card.drawCard(ctx, i, true);
+		}
+	}
+
 }
 
 let players = [];
@@ -321,11 +343,8 @@ function drawBoard(){
 
 	for(let i = 0; i < players.length; i++){
 		let player = players[i];
-		for(let j = 0; j < player.cards.length; j++){
-			let card = player.cards[j];
-			let img =document.getElementById(card.image);
-			ctx.drawImage(img, j*80+5, 0,80,80);
-		}
+		player.drawCards(ctx);
+
 	}
 
 }
