@@ -1,11 +1,10 @@
 @import 'buttons';
-
+@import 'textBoxes';
 
 body{
 	background-color: red;
 	font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
 }
-
 
 #unoTitle{
 	color: gold;
@@ -18,4 +17,10 @@ body{
     margin-top: 50px;
     letter-spacing: -10px;
     margin-bottom: 50px;
+}
+
+#gameNameContainer{
+	display: grid;
+	grid-template-columns: 1fr 400px 1fr;
+	margin-bottom: 40px;
 }

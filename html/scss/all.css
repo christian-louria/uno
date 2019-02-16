@@ -23,9 +23,19 @@
   margin-bottom: 30px;
   margin-top: 30px; }
 
-.centerButton {
+.centered {
   margin-right: auto;
   margin-left: auto; }
+
+.textBox {
+  border-radius: 5px;
+  width: 400px;
+  height: 50px;
+  font-size: 2em;
+  border-style: solid; }
+
+.textBox:focus {
+  outline-width: 0; }
 
 body {
   background-color: red;
@@ -42,5 +52,10 @@ body {
   margin-top: 50px;
   letter-spacing: -10px;
   margin-bottom: 50px; }
+
+#gameNameContainer {
+  display: grid;
+  grid-template-columns: 1fr 400px 1fr;
+  margin-bottom: 40px; }
 
 /*# sourceMappingURL=all.css.map */
