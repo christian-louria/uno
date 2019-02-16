@@ -299,6 +299,26 @@ function drawBoard(){
 	ctx.fill();
 	ctx.closePath();
 
+	ctx.translate(normalizedWidth/2, normalizedHeight/2)
+	ctx.rotate(-20 * Math.PI / 180);
+	ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+	ctx.font = "bolder 100px Arial";
+	ctx.fillStyle = "gold";
+	ctx.textAlign = "center"; 
+	ctx.fillText("UNO", normalizedWidth/1.72, normalizedHeight/5);
+	ctx.lineWidth = "3";
+	ctx.strokeStyle = "white";
+	ctx.strokeText("UNO", normalizedWidth/1.72, normalizedHeight/5);
+	ctx.translate(normalizedWidth/2, normalizedHeight/2)
+	ctx.rotate(20 * Math.PI / 180);
+	ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+
+
+	// let backCard = 
+
+	// ctx.
+
+
 	for(let i = 0; i < players.length; i++){
 		let player = players[i];
 		for(let j = 0; j < player.cards.length; j++){
