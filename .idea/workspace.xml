@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="70ca0e88-0060-413e-abf5-fea14fe2b1a9" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/html/img/cards/SVG/back.svg" beforeDir="false" afterPath="$PROJECT_DIR$/html/img/cards/SVG/back.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/html/js/uno.js" beforeDir="false" afterPath="$PROJECT_DIR$/html/js/uno.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/html/js/uno.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="920">
-              <caret line="209" column="16" selection-start-line="209" selection-start-column="16" selection-end-line="209" selection-end-column="16" />
+            <state relative-caret-position="246">
+              <caret line="85" column="57" selection-start-line="85" selection-start-column="57" selection-end-line="85" selection-end-column="57" />
             </state>
           </provider>
         </entry>
@@ -52,7 +53,7 @@
         <entry file="file://$PROJECT_DIR$/html/room.html">
           <provider selected="true" editor-type-id="text-editor">
             <state>
-              <caret column="21" selection-start-column="12" selection-end-column="21" />
+              <caret line="3" column="21" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -75,7 +76,7 @@
   <component name="PhpServers">
     <servers />
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="23" />
     <option name="width" value="1920" />
     <option name="height" value="1088" />
@@ -158,15 +159,15 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1550343104801</updated>
-      <workItem from="1550343108254" duration="4717000" />
+      <workItem from="1550343108254" duration="5923000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4717000" />
+    <option name="totallyTimeSpent" value="5923000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1920" height="1088" extended-state="0" />
+    <frame x="0" y="23" width="1920" height="1088" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" side_tool="true" />
@@ -198,7 +199,7 @@
     <entry file="file://$PROJECT_DIR$/html/room.html">
       <provider selected="true" editor-type-id="text-editor">
         <state>
-          <caret column="21" selection-start-column="12" selection-end-column="21" />
+          <caret line="3" column="21" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="21" />
         </state>
       </provider>
     </entry>
@@ -230,8 +231,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/html/js/uno.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="920">
-          <caret line="209" column="16" selection-start-line="209" selection-start-column="16" selection-end-line="209" selection-end-column="16" />
+        <state relative-caret-position="246">
+          <caret line="85" column="57" selection-start-line="85" selection-start-column="57" selection-end-line="85" selection-end-column="57" />
         </state>
       </provider>
     </entry>
