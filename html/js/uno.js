@@ -9,6 +9,8 @@ const updateTime = 15;
 let canvas;
 let ctx;
 let timer;
+let currentPlayer = "Alex";
+let turn = "Alex"
 
 const cardURLs = [
 "0-blue.svg",
@@ -96,7 +98,7 @@ class Player{
 		}
 	}
 
-	drawCards(ctx){
+	drawCards(ctx, player){
 		let normalizedWidth = canvas.width / devicePixelRatio;
 		let normalizedHeight = canvas.height / devicePixelRatio;
 
@@ -108,12 +110,49 @@ class Player{
 
 			let moveUp = card.isSelected ? 80 : 40;
 
-			card.x = startOffset+ i * cardWidth * 0.4;
-			card.y = normalizedHeight - cardHeight - moveUp;
+			if(this.name == currentPlayer){
+				card.x = startOffset+ i * cardWidth * 0.4;
+				card.y = normalizedHeight - cardHeight - moveUp;
+			} else if (player == 1) {
+				img = document.getElementById("back.svg");
+				card.x = startOffset+ i * cardWidth * 0.4;
+				card.y = 30;
+			} else if (player == 2) {
+				ctx.translate(normalizedWidth/2, normalizedHeight/2)
+				ctx.rotate(90 * Math.PI / 180);
+				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+				img = document.getElementById("back.svg");
+				card.x = startOffset+ i * cardWidth * 0.4;
+				card.y = -90;
+				
+			}
+			else if (player == 3) {
+				ctx.translate(normalizedWidth/2, normalizedHeight/2)
+				ctx.rotate(-90 * Math.PI / 180);
+				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+				img = document.getElementById("back.svg");
+				card.x = startOffset+ i * cardWidth * 0.4;
+				card.y = -90;
+				
+			}
+
 			card.width = cardWidth;
 			card.height = cardHeight;
 
 			ctx.drawImage(img, card.x, card.y, card.width, card.height);
+
+			if(player == 2){
+				ctx.translate(normalizedWidth/2, normalizedHeight/2)
+				ctx.rotate(-90 * Math.PI / 180);
+				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+			}
+			else if (player == 3) {
+				ctx.translate(normalizedWidth/2, normalizedHeight/2)
+				ctx.rotate(90 * Math.PI / 180);
+				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+				
+				
+			}
 
 		}
 	}
@@ -199,6 +238,73 @@ const mockGame = [
 			},
 			{
 				type: "4",
+				color: "blue"
+			}
+
+		]
+	},
+	{
+		name: "Blex",
+		cards: [
+			{
+				type: "5",
+				color: "red"
+			},
+			{
+				type: "5",
+				color: "green"
+			},
+			{
+				type: "5",
+				color: "yellow"
+			},
+			{
+				type: "5",
+				color: "blue"
+			}
+
+		]
+	},
+	{
+		name: "Flex",
+		cards: [
+			{
+				type: "9",
+				color: "red"
+			},
+			{
+				type: "9",
+				color: "green"
+			},
+			{
+				type: "9",
+				color: "yellow"
+			},
+			{
+				type: "5",
+				color: "blue"
+			}
+
+		]
+	}
+	,
+	{
+		name: "Sex",
+		cards: [
+			{
+				type: "9",
+				color: "red"
+			},
+			{
+				type: "9",
+				color: "green"
+			},
+			{
+				type: "9",
+				color: "yellow"
+			},
+			{
+				type: "5",
 				color: "blue"
 			}
 
@@ -357,19 +463,19 @@ function drawBoard(){
 	ctx.fill();
 	ctx.closePath();
 
-	ctx.translate(normalizedWidth/2, normalizedHeight/2)
-	ctx.rotate(-20 * Math.PI / 180);
-	ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
-	ctx.font = "bolder 100px Arial";
-	ctx.fillStyle = "gold";
-	ctx.textAlign = "center"; 
-	ctx.fillText("UNO", normalizedWidth/1.72, normalizedHeight/5);
-	ctx.lineWidth = "3";
-	ctx.strokeStyle = "white";
-	ctx.strokeText("UNO", normalizedWidth/1.72, normalizedHeight/5);
-	ctx.translate(normalizedWidth/2, normalizedHeight/2)
-	ctx.rotate(20 * Math.PI / 180);
-	ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+	// ctx.translate(normalizedWidth/2, normalizedHeight/2)
+	// ctx.rotate(-20 * Math.PI / 180);
+	// ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
+	// ctx.font = "bolder 100px Arial";
+	// ctx.fillStyle = "gold";
+	// ctx.textAlign = "center"; 
+	// ctx.fillText("UNO", normalizedWidth/1.72, normalizedHeight/5);
+	// ctx.lineWidth = "3";
+	// ctx.strokeStyle = "white";
+	// ctx.strokeText("UNO", normalizedWidth/1.72, normalizedHeight/5);
+	// ctx.translate(normalizedWidth/2, normalizedHeight/2)
+	// ctx.rotate(20 * Math.PI / 180);
+	// ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
 
 
 	let backCard  = document.getElementById("back.svg")
@@ -378,13 +484,13 @@ function drawBoard(){
 	ctx.shadowOffsetY = 5;
 	ctx.shadowColor = 'RGBA(38, 42, 44, .5)';
 	ctx.shadowBlur = 40;
-	ctx.drawImage(backCard, normalizedWidth/2, normalizedHeight/2, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.98, normalizedHeight/2.02, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.98, normalizedHeight/2.02, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.97, normalizedHeight/2.03, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.99, normalizedHeight/1.99, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.98, normalizedHeight/1.98, cardWidth, cardHeight)
-	ctx.drawImage(backCard, normalizedWidth/1.99, normalizedHeight/1.99, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/2 - 150, normalizedHeight/2  - 50, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.97 - 150, normalizedHeight/2.03 - 50, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/1.98 - 50, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight)
 	ctx.shadowOffsetX = 0;
 	ctx.shadowOffsetY = 0;
 	ctx.shadowColor = 'RGBA(0, 0, 0, 0)';
@@ -394,7 +500,7 @@ function drawBoard(){
 
 	for(let i = 0; i < players.length; i++){
 		let player = players[i];
-		player.drawCards(ctx);
+		player.drawCards(ctx, i);
 
 	}
 
