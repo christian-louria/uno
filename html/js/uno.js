@@ -340,8 +340,23 @@ function drawBoard(){
 
 
 	let backCard  = document.getElementById("back.svg")
+	ctx.
+	ctx.shadowOffsetX = 5;
+	ctx.shadowOffsetY = 5;
+	ctx.shadowColor = 'RGBA(38, 42, 44, .5)';
+	ctx.shadowBlur = 40;
 	ctx.drawImage(backCard, normalizedWidth/2, normalizedHeight/2, cardWidth, cardHeight)
 	ctx.drawImage(backCard, normalizedWidth/1.98, normalizedHeight/2.02, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.98, normalizedHeight/2.02, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.97, normalizedHeight/2.03, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.99, normalizedHeight/1.99, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.98, normalizedHeight/1.98, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.99, normalizedHeight/1.99, cardWidth, cardHeight)
+	ctx.shadowOffsetX = 0;
+	ctx.shadowOffsetY = 0;
+	ctx.shadowColor = 'RGBA(0, 0, 0, 0)';
+	ctx.shadowBlur = 0;
+
 
 
 	for(let i = 0; i < players.length; i++){
