@@ -4,4 +4,6 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
 Setup backend files and wrote the card generator
   </component>
+    <mapping directory="" vcs="Git" />
+  </component>
 </project>
