@@ -80,7 +80,7 @@ class Player{
 		this.name = name;
 		this.cards = [];
 		for(let i = 0; i < cards.length; i++){
-			this.cards = new Card(cards[i].type, cards[i].color);
+			this.cards.push(new Card(cards[i].type, cards[i].color));
 		}
 	}
 }
@@ -111,12 +111,14 @@ function startGame(){
 		//scale the canvas properly
 		scaleCanvas(canvas, ctx, aspectRatio()[0], aspectRatio()[1]);
 
+		for(let i = 0; i < mockGame.length; i++){
+			players.push(new Player(mockGame[i].name, mockGame[i].cards));
+		}
+
 		//start the canvas updates
 		timer = setInterval(drawBoard, updateTime);
 
-		for(let i = 0; i < mockGame.length; i++){
-			players.push(mockGame[i]);
-		}
+
 	});
 
 }
@@ -127,6 +129,18 @@ const mockGame = [
 		cards: [
 			{
 				type: "1",
+				color: "red"
+			},
+			{
+				type: "2",
+				color: "green"
+			},
+			{
+				type: "3",
+				color: "yellow"
+			},
+			{
+				type: "4",
 				color: "blue"
 			}
 
@@ -201,6 +215,8 @@ $(document).ready(function(){
 	for(let i = 0; i < cardURLs.length; i++){
 		$("#cards").append(`<img src="/img/cards/SVG/${cardURLs[i]}" id="${cardURLs[i]}" height="0px" width="0px">`);
 	}
+
+	startGame();
 
 })
 
@@ -288,7 +304,7 @@ function drawBoard(){
 		for(let j = 0; j < player.cards.length; j++){
 			let card = player.cards[j];
 			let img =document.getElementById(card.image);
-			ctx.drawImage(img, 0, 0,80,80);
+			ctx.drawImage(img, j*80+5, 0,80,80);
 		}
 	}
 
