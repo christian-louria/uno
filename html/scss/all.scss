@@ -1,7 +1,11 @@
+@import 'buttons';
+
+
 body{
 	background-color: red;
 	font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
 }
+
 
 #unoTitle{
 	color: gold;
@@ -12,4 +16,6 @@ body{
     -webkit-text-stroke-color: white;
     transform: rotate(-10deg);
     margin-top: 50px;
+    letter-spacing: -10px;
+    margin-bottom: 50px;
 }
