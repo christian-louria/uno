@@ -68,7 +68,7 @@ const cardURLs = [
 "back.svg",
 ];
 
-const cardRatio = 0.7;
+const cardRatio = 0.45;
 const cardWidth = 240 * cardRatio;
 const cardHeight = 360 * cardRatio;
 
@@ -79,17 +79,6 @@ class Card{
 		this.image = `${this.type}-${this.color}.svg`;
 	}
 
-	drawCard(ctx, idx, currentPlayer){
-		let normalizedWidth = canvas.width / devicePixelRatio;
-		let normalizedHeight = canvas.height / devicePixelRatio;
-
-		let img =document.getElementById(this.image);
-		if(currentPlayer){
-			
-			ctx.drawImage(img, idx*80+5, 0, cardWidth, cardHeight);
-		}
-
-	}
 }
 
 class Player{
@@ -102,9 +91,15 @@ class Player{
 	}
 
 	drawCards(ctx){
+		let normalizedWidth = canvas.width / devicePixelRatio;
+		let normalizedHeight = canvas.height / devicePixelRatio;
+
+		let startOffset = (normalizedWidth - this.cards.length * cardWidth * 0.4) / 2;
+
 		for(let i = 0; i < this.cards.length; i++){
 			let card = this.cards[i];
-			card.drawCard(ctx, i, true);
+			let img = document.getElementById(card.image);
+			ctx.drawImage(img, startOffset+ i * cardWidth * 0.4, normalizedHeight - cardHeight - 10, cardWidth, cardHeight);
 		}
 	}
 
