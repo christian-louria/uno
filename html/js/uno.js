@@ -1,7 +1,7 @@
 //vars
 
 let pixelRatio = window.devicePixelRatio;
-let devMode = false;
+let devMode = true;
 
 const updateTime = 15;
 
@@ -68,8 +68,9 @@ const cardURLs = [
 ];
 
 class Card{
-	constructor(cardData){
-
+	constructor(type, color){
+		this.type = type;
+		this.color = color;
 	}
 }
 
@@ -78,17 +79,20 @@ class Player{
 		this.name = name;
 		this.cards = [];
 		for(let i = 0; i < cards.length; i++){
-			this.cards = new Card(cards[i]);
+			this.cards = new Card(cards[i].type, cards[i].color);
 		}
 	}
 }
+
+let players = [];
 
 const mockGame = [
 	{
 		name: "Alex",
 		cards: [
 			{
-				type: "1"
+				type: "1",
+				color: "blue"
 			}
 
 		]
@@ -143,7 +147,9 @@ $(document).ready(function(){
 	//start the canvas updates
 	timer = setInterval(drawBoard, updateTime);
 
-
+	for(let i = 0; i < mockGame.length; i++){
+		this.players.push(mockGame[i]);
+	}
 
 })
 
@@ -218,5 +224,12 @@ function aspectRatio() {
 function drawBoard(){
 	let normalizedWidth = canvas.width / devicePixelRatio;
 	let normalizedHeight = canvas.height / devicePixelRatio;
+
+	//clear background
+	ctx.fillStyle = "#FF0000";
+	ctx.beginPath();
+	ctx.rect(0,0, normalizedWidth, normalizedHeight);
+	ctx.fill();
+	ctx.closePath();
 
 }
