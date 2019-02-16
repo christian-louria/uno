@@ -214,6 +214,8 @@ function startGame(){
 			}
 			x -= canvas.offsetLeft;
 			y -= canvas.offsetTop;
+			console.log(x)
+			console.log(y)
 
 			for(let i = 0; i < players.length; i++){
 				players[i].registerClick(x, y);
@@ -386,7 +388,8 @@ $(document).ready(function(){
 //////////
 	//load in images
 	for(let i = 0; i < cardURLs.length; i++){
-		$("#cards").append(`<img src="/img/cards/SVG/${cardURLs[i]}" id="${cardURLs[i]}" height="0px" width="0px" alt="${cardURLs[i]}">`);
+		$("#cards").append(`<img src="/img/cards/SVG/${cardURLs[i]}" id="${cardURLs[i]}"
+		 height="0px" width="0px" alt="${cardURLs[i]}">`);
 	}
 
 	startGame();
@@ -439,7 +442,7 @@ function aspectRatio() {
 	let height = $body.height();
 	let ratio = width / height;
 
-	let destinationRatio = 96 / 100;
+	let destinationRatio = 1;
 
 	if (ratio === destinationRatio) {
 		return [width, height];
