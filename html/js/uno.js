@@ -99,7 +99,7 @@ class Player{
 		for(let i = 0; i < this.cards.length; i++){
 			let card = this.cards[i];
 			let img = document.getElementById(card.image);
-			ctx.drawImage(img, startOffset+ i * cardWidth * 0.4, normalizedHeight - cardHeight - 10, cardWidth, cardHeight);
+			ctx.drawImage(img, startOffset+ i * cardWidth * 0.4, normalizedHeight - cardHeight - 40, cardWidth, cardHeight);
 		}
 	}
 
@@ -335,7 +335,7 @@ function drawBoard(){
 
 
 	let backCard  = document.getElementById("back.svg")
-	ctx.
+	//ctx.
 	ctx.shadowOffsetX = 5;
 	ctx.shadowOffsetY = 5;
 	ctx.shadowColor = 'RGBA(38, 42, 44, .5)';
