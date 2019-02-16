@@ -78,7 +78,7 @@ public class Server {
 
                 // Play card
                 int card = 0;
-                player.getRoom().playCard(player.getHand().get(card));
+                //player.getRoom().playCard(player.getHand().get(card));
             } else {
 
                 // Check if game is over
