@@ -25,14 +25,30 @@
 	margin-bottom: 30px;
 	margin-top: 30px;
 }
-
+ 
 .centered{
 	margin-right: auto;
 	margin-left: auto;
 }
 
-.leaveGameButton{
+#leaveGameButton:hover{
+	background-color: #F2F800;
+}
+
+#leaveGameButton{
 	position: fixed;
-	top: 0px;
-    right: 0px;
+	top: 2px;
+    right: 2px;
+    width: 100px;
+	background-color: gold;
+	border-radius: 100px;
+	padding: 20px;
+	font-size: 1.1em;
+	color: black;
+	font-weight: bolder;
+	text-align: center;
+	border: 2px solid black;
+    transition: all .2s ease-in-out;
+    cursor: pointer;
+    letter-spacing: -1px;
 }
