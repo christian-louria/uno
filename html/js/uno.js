@@ -112,14 +112,25 @@ const mockGame = [
 ]
 
 $(document).ready(function(){
+
+///////////////////////////
+
+//History Controls
+
+///////////////////////////
 	window.history.pushState('forward', null, './index');
-	
 	if (window.history && window.history.pushState) {
-
-    window.history.pushState('forward', null, './#forward');
-
     $(window).on('popstate', function() {
-      alert('Back button was pressed.');
+      url = window.location.href
+      if (url.includes("index")){
+      	index();
+      }
+      if (url.includes("hostGame")) {
+      	hostGame();
+      }
+      if (url.includes("joinGame")) {
+      	joinGame();
+      }
     });
 
   }
@@ -139,8 +150,6 @@ $(document).ready(function(){
 
 
 
-
-
 ///Create or join game
 	$(document).on("click", "#createRequest", function(){
 		var gameName = $("#gameNameText").val()
@@ -153,6 +162,7 @@ $(document).ready(function(){
 		var gameName = $("#gameNameText").val()
 
 		//socket
+		
 	})
 //////////
 
