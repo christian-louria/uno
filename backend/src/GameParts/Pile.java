@@ -1,17 +1,21 @@
 package GameParts;
 
-import java.util.ArrayList;
-
+/**
+ * Represents the pile of cards that have been played
+ */
 public class Pile {
 
-    ArrayList<Card> pile;
+    private Card top;
 
-    Pile() {
-        this.pile = new ArrayList<>();
-    }
+    /**
+     * Top card getter
+     * @return Card on top of the deck
+     */
+    public Card topCard() { return this.top; }
 
-    public Card topCard() {
-
-        return this.pile.get(0);
-    }
+    /**
+     * Top card setter
+     * @param card New card on top of the deck
+     */
+    public void setTop(Card card) { this.top = card; }
 }
