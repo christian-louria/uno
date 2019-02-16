@@ -77,6 +77,12 @@ class Card{
 		this.type = type;
 		this.color = color;
 		this.image = `${this.type}-${this.color}.svg`;
+		this.isSelected = false;
+
+		this.x = 0;
+		this.y = 0;
+		this.width = 0;
+		this.height = 0;
 	}
 
 }
@@ -99,8 +105,21 @@ class Player{
 		for(let i = 0; i < this.cards.length; i++){
 			let card = this.cards[i];
 			let img = document.getElementById(card.image);
-			ctx.drawImage(img, startOffset+ i * cardWidth * 0.4, normalizedHeight - cardHeight - 40, cardWidth, cardHeight);
+
+			let moveUp = card.isSelected ? 80 : 40;
+
+			card.x = startOffset+ i * cardWidth * 0.4;
+			card.y = normalizedHeight - cardHeight - moveUp;
+			card.width = cardWidth;
+			card.height = cardHeight;
+
+			ctx.drawImage(img, card.x, card.y, card.width, card.height);
+
 		}
+	}
+
+	registerClick(x,y){
+		
 	}
 
 }
@@ -134,6 +153,25 @@ function startGame(){
 		for(let i = 0; i < mockGame.length; i++){
 			players.push(new Player(mockGame[i].name, mockGame[i].cards));
 		}
+
+		canvas.addEventListener("click", function(e) {
+			e.preventDefault();
+
+			let x;
+			let y;
+			if (e.pageX || e.pageY) {
+				x = e.pageX;
+				y = e.pageY;
+			}
+			else {
+				x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+				y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+			}
+			x -= canvas.offsetLeft;
+			y -= canvas.offsetTop;
+
+			console.log(`${x}, ${y}`);
+		}, false);
 
 		//start the canvas updates
 		timer = setInterval(drawBoard, updateTime);
