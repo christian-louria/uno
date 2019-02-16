@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Room {
 
-    private enum Direction{LEFT, RIGHT};
+    private enum Direction{LEFT, RIGHT}
 
     private Direction currentPlayDirection;
     private ArrayList<Player> players;
@@ -252,6 +252,14 @@ public class Room {
 
         // Make this person safe from having uno called upon them
         if(callee.getHand().size() == 1){
+            callee.setCalledUno(true);
+            unoCorrectlyCalled = true;
+        }
+
+        // If it is this player's turn and they have 2 they can call uno before
+        // playing the card
+        if(this.players.get(this.currentPlayer).equals(callee) &&
+                callee.getHand().size() == 2){
             callee.setCalledUno(true);
             unoCorrectlyCalled = true;
         }
