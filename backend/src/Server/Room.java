@@ -1,11 +1,13 @@
 package Server;
 
 import GameParts.*;
-
 import java.util.ArrayList;
 
 public class Room {
 
+    private enum Direction{LEFT, RIGHT};
+
+    private Direction currentPlayDirection;
     private ArrayList<Player> players;
     private Integer maximumPlayers = 4;
     private String id;
@@ -13,6 +15,7 @@ public class Room {
     private Pile pile;
     private boolean gameStarted;
     private Player host;
+    private Integer currentPlayer;
 
     Room(String id) {
         this.players = new ArrayList<>();
@@ -20,6 +23,7 @@ public class Room {
         this.deck = new Deck();
         this.pile = new Pile();
         this.id = id;
+        this.currentPlayDirection = Direction.LEFT;
     }
 
     /**
@@ -68,7 +72,7 @@ public class Room {
 
         for(Player p : this.players){
 
-            ArrayList<Card> hand = new ArrayList<Card>();
+            ArrayList<Card> hand = new ArrayList<>();
             while(hand.size() < 7)
                 hand.add(deck.draw());
 
@@ -76,6 +80,7 @@ public class Room {
         }
 
         this.gameStarted = true;
+        this.currentPlayer = 0;
 
         // Set the top of the pile to the top of the deck
         this.pile.setTop(deck.draw());
@@ -116,11 +121,36 @@ public class Room {
         return id;
     }
 
+
+    /**
+     * Points to the next player
+     */
+    private void nextPlayer() {
+
+        // Deal reverse direction of play
+        if(this.currentPlayDirection == Direction.LEFT){
+
+            this.currentPlayer++;
+            if(this.currentPlayer.equals(this.players.size()))
+                this.currentPlayer = 0;
+        } else {
+
+            this.currentPlayer--;
+            if(this.currentPlayer == 0)
+                this.currentPlayer = this.players.size() - 1;
+        }
+    }
+
     /**
      * Plays a card on the board
      */
     public void playCard(Player callee, int cardLocation, Color wildcardColor)
-            throws IllegalCardException {
+            throws IllegalCardException, IllegalPlayException {
+
+        // If it is not this players turn they cannot play the card
+        if(!this.players.get(currentPlayer).equals(callee)){
+            throw new IllegalPlayException();
+        }
 
         // Get the card from the player's hand
         Card card = callee.getHand().get(cardLocation);
@@ -132,6 +162,8 @@ public class Room {
             this.pile.setTop(card);
             this.pile.setTopColor(wildcardColor);
             callee.getHand().remove(cardLocation);
+            handleCard();
+            return;
         }
 
         // If Wild card is on top then get the new color from the pile
@@ -145,6 +177,8 @@ public class Room {
                 this.pile.setTop(card);
                 this.pile.setTopColor(card.getColor());
                 callee.getHand().remove(cardLocation);
+                handleCard();
+                return;
             } else {
 
                 // Color doesn't match and you cannot match type with a wildcard
@@ -158,10 +192,87 @@ public class Room {
             this.pile.setTop(card);
             this.pile.setTopColor(card.getColor());
             callee.getHand().remove(cardLocation);
+            handleCard();
         } else {
 
             // Only this case means a card is bad
             throw new IllegalCardException();
+        }
+    }
+
+
+    /**
+     * Deals with the card as needed
+     */
+    private void handleCard(){
+
+        if(this.pile.topCard().getType() == CardType.SKIP){
+
+            // If skip is played then call next player twice
+            this.nextPlayer();
+            this.nextPlayer();
+        } else if(this.pile.topCard().getType() == CardType.REVERSE){
+
+            // Reverse Direction
+            if(this.currentPlayDirection == Direction.LEFT)
+                this.currentPlayDirection = Direction.RIGHT;
+            else
+                this.currentPlayDirection = Direction.LEFT;
+
+            this.nextPlayer();
+        } else if(this.pile.topCard().getType() == CardType.ADDTWO){
+
+            // Make the player draw two then move on
+            this.nextPlayer();
+            this.players.get(currentPlayer).setCalledUno(false);
+            this.players.get(currentPlayer).getHand().add(this.deck.draw());
+            this.players.get(currentPlayer).getHand().add(this.deck.draw());
+            this.nextPlayer();
+        } else if(this.pile.topCard().getType() == CardType.ADDFOUR){
+
+            this.nextPlayer();
+            this.players.get(currentPlayer).setCalledUno(false);
+            for(int i = 0; i < 4; i++)
+                this.players.get(currentPlayer).getHand().add(this.deck.draw());
+            this.nextPlayer();
+        } else {
+
+            this.nextPlayer();
+        }
+    }
+
+
+    /**
+     * Simulates a player calling uno during the game
+     * @param callee Person calling uno
+     */
+    public void callUno(Player callee) throws IllegalUnoCallException {
+
+        boolean unoCorrectlyCalled = false;
+
+        // Make this person safe from having uno called upon them
+        if(callee.getHand().size() == 1){
+            callee.setCalledUno(true);
+            unoCorrectlyCalled = true;
+        }
+
+        // check to see if this player got another person not
+        // calling uno. Must do both in case player had 1 card in
+        // their hand from earlier but is calling uno against
+        // a different player
+        for(Player p : callee.getRoom().players){
+            if(p.getHand().size() == 1 && !p.didCallUno()){
+                p.setCalledUno(false);
+                p.getHand().add(this.deck.draw());
+                unoCorrectlyCalled = true;
+            }
+        }
+
+        if(!unoCorrectlyCalled){
+
+            // if UNO was not called correctly throw an exception so player must
+            // wait to call it again
+            throw new IllegalUnoCallException();
         }
     }
 
@@ -213,7 +324,7 @@ public class Room {
         }
 
 
-        try {
+        /*try {
             // Grant plays draw two blue on to reverse blue
             grant.getRoom().playCard(grant, 0, null);
 
@@ -228,11 +339,22 @@ public class Room {
 
         } catch (IllegalCardException e) {
             e.printStackTrace();
+        } catch (IllegalPlayException e) {
+            e.printStackTrace();
+        }*/
+
+        grant.setHand(new ArrayList<>());
+        grant.getHand().add(grant.getRoom().deck.draw());
+        //grant.getHand().add(grant.getRoom().deck.draw());
+
+        try {
+            grant.getRoom().callUno(grant);
+        } catch (IllegalUnoCallException e) {
+            e.printStackTrace();
         }
 
 
         boolean gameOver = grant.getRoom().isGameOver();
-        grant.setHand(new ArrayList<>());
         gameOver = grant.getRoom().isGameOver();
 
         return;

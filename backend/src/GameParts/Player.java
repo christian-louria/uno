@@ -2,7 +2,6 @@ package GameParts;
 
 import Server.Room;
 
-import java.net.Socket;
 import java.util.ArrayList;
 
 //public class Player extends Socket {
@@ -11,6 +10,7 @@ public class Player {
     private ArrayList<Card> hand;
     private String name;
     private Room room;
+    private boolean calledUno;
 
     /**
      * Player constructor
@@ -23,10 +23,27 @@ public class Player {
     }
 
     /**
+     * CalledUno getter
+     * @return Whether or not this player called uno
+     */
+    public boolean didCallUno(){
+        return calledUno;
+    }
+
+
+    /**
+     * CalledUno setter
+     * @param calledUno whether or not this player called uno
+     */
+    public void setCalledUno(boolean calledUno) {
+        this.calledUno = calledUno;
+    }
+
+    /**
      * Room setter for this player
      * @param room Room the player is joining
      */
-    public void setRoom(Room room){
+    public void setRoom( Room room ){
         this.room = room;
     }
 
