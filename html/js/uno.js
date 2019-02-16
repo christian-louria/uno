@@ -1,15 +1,3 @@
-function index(){
-	$("#mainContent").load("home.html");
-}
-
-function hostGame(){
-	$("#mainContent").load("hostGame.html");
-}
-
-function joinGame(){
-	$("#mainContent").load("joinGame.html");
-}
-
 //vars
 
 let pixelRatio = window.devicePixelRatio;
@@ -83,6 +71,7 @@ class Card{
 	constructor(type, color){
 		this.type = type;
 		this.color = color;
+		this.image = `${this.type}-${this.color}.svg`;
 	}
 }
 
@@ -97,6 +86,40 @@ class Player{
 }
 
 let players = [];
+
+function index(){
+	$("#mainContent").load("home.html");
+}
+
+function hostGame(){
+	$("#mainContent").load("hostGame.html");
+}
+
+function joinGame(){
+	$("#mainContent").load("joinGame.html");
+}
+
+function startGame(){
+
+	$("#mainContent").load("room.html", function(){
+		$("#unoTitle").hide();
+		canvas = document.getElementById("gameBoard");
+
+		ctx = canvas.getContext("2d");
+
+
+		//scale the canvas properly
+		scaleCanvas(canvas, ctx, aspectRatio()[0], aspectRatio()[1]);
+
+		//start the canvas updates
+		timer = setInterval(drawBoard, updateTime);
+
+		for(let i = 0; i < mockGame.length; i++){
+			players.push(mockGame[i]);
+		}
+	});
+
+}
 
 const mockGame = [
 	{
@@ -165,23 +188,9 @@ $(document).ready(function(){
 		
 	})
 //////////
-
-	canvas = document.getElementById("gameBoard");
-
-	ctx = canvas.getContext("2d");
-
-	let images = document.getElementById("gamePieces");
-	images.style.visibility = 'hidden';
-
-
-	//scale the canvas properly
-	scaleCanvas(canvas, ctx, aspectRatio()[0], aspectRatio()[1]);
-
-	//start the canvas updates
-	timer = setInterval(drawBoard, updateTime);
-
-	for(let i = 0; i < mockGame.length; i++){
-		this.players.push(mockGame[i]);
+	//load in images
+	for(let i = 0; i < cardURLs.length; i++){
+		$("#cards").append(`<img src="/img/cards/SVG/${cardURLs[i]}" id="${cardURLs[i]}" height="0px" width="0px">`);
 	}
 
 })
@@ -264,5 +273,14 @@ function drawBoard(){
 	ctx.rect(0,0, normalizedWidth, normalizedHeight);
 	ctx.fill();
 	ctx.closePath();
+
+	for(let i = 0; i < players.length; i++){
+		let player = players[i];
+		for(let j = 0; j < player.cards.length; j++){
+			let card = player.cards[j];
+			let img =document.getElementById(card.image);
+			ctx.drawImage(img, 0, 0,80,80);
+		}
+	}
 
 }
