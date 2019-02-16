@@ -207,6 +207,8 @@ $(document).ready(function(){
 		$("#cards").append(`<img src="/img/cards/SVG/${cardURLs[i]}" id="${cardURLs[i]}" height="0px" width="0px">`);
 	}
 
+	startGame();
+
 })
 
 //GamePlay
