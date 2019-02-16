@@ -5,7 +5,8 @@ import Server.Room;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class Player extends Socket {
+//public class Player extends Socket {
+public class Player {
 
     private ArrayList<Card> hand;
     private String name;
@@ -15,7 +16,7 @@ public class Player extends Socket {
      * Player constructor
      * @param name Name of this player
      */
-    Player( String name ) {
+    public Player( String name ) {
 
         hand = new ArrayList<>();
         this.name = name;

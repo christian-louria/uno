@@ -6,101 +6,102 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 
 public class Server {
 
-    Server(){}
+    ArrayList<Room> currentRooms;
+
+    Server(){
+        currentRooms = new ArrayList<Room>();
+    }
 
     public void handleConnection(Player player){
 
         DataInputStream inStream;
         DataOutputStream outStream;
 
-        try {
+        /*try {
             inStream = new DataInputStream(player.getInputStream());
             outStream = new DataOutputStream(player.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
-        }
+        }*/
 
         while(true){
 
-            // Create room
-            String name = "Name";
-            Room room = new Room(name);
-            room.setHost(player);
-            player.setRoom(room);
+            int id = 3;
+            if(id == 1){
 
-            // Join room
+                // Create room
+                String name = "Name";
+                Room room = new Room(name);
+                room.setHost(player);
+                this.currentRooms.add(room);
+                player.setRoom(room);
 
-            // Start game
-            try {
-                player.getRoom().startGame(player);
-            } catch (NotEnoughPlayersException e) {
+            } else if(id == 2){
 
-                // alert that there are not enough
-            } catch (GameAlreadyStartedException e) {
+                // Join room
+                String roomName = "Name";
+                for(Room room : this.currentRooms){
+                    if(room.getId().equals(roomName)){
 
-                // alert that the game has already began
-            } catch (InsufficientPrivilegesException e) {
+                        try {
+                            room.addPlayer(player);
+                        } catch (RoomFullException e) {
 
-                // alert this player is not the host
-            }
+                            // alert player that the room was full
+                        }
 
+                    }
+                }
 
-            // Play card
-            int card = 0;
-            player.getRoom().playCard(player.getHand().get(card));
+            } else if(id == 3){
 
+                // Start game
+                try {
+                    player.getRoom().startGame(player);
+                } catch (NotEnoughPlayersException e) {
 
-            // Check if game is over
-            if(player.getRoom().isGameOver()){
+                    // alert that there are not enough
+                } catch (GameAlreadyStartedException e) {
 
-                for(Player p : player.getRoom().getPlayers()){
+                    // alert that the game has already began
+                } catch (InsufficientPrivilegesException e) {
 
-                    // Alert other players the game is over
-                    continue;
+                    // alert this player is not the host
+                }
+
+            } else if(id == 4) {
+
+                // Play card
+                int card = 0;
+                player.getRoom().playCard(player.getHand().get(card));
+            } else {
+
+                // Check if game is over
+                if(player.getRoom().isGameOver()){
+
+                    for(Player p : player.getRoom().getPlayers()){
+
+                        // Alert other players the game is over
+                        continue;
+                    }
+
+                    break;
                 }
             }
-        }
-    }
-}
 
-public class Main {
-
-    public static void main(String[] args) {
-
-        if(args.length < 1){
-            System.err.println("Usage: java Server.Server <port>");
-            System.exit(1);
         }
 
-        ServerSocket serverSock;
-        Server gameServer = new Server();
-
-        try {
-            serverSock = new ServerSocket(Integer.parseInt(args[0]));
+        // Close the connection for this player
+        /*try {
+            player.close();
         } catch (IOException e) {
-
-            System.err.println(String.format("Port %s in use or privileged port.", args[0]));
-            System.err.println("Try running as root or using a port above 1023");
-            System.exit(1);
-        } catch (NumberFormatException e) {
-
-            System.err.println("Port supplied must be an integer");
-            System.exit(1);
-        } catch (IllegalArgumentException e) {
-            System.err.println("Port number must be between 1 and 65535");
-            System.exit(1);
-        }
-
-        //System.out.println(String.format("Socket starting on port %d", serverSock.getLocalPort()));
-
-        while(true){
-
-            Player player = serverSock.accept();
-            gameServer.handleConnection(player);
-        }
+            e.printStackTrace();
+        }*/
     }
 }
+

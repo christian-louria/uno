@@ -1,22 +1,7 @@
 package GameParts;
 
-
 import java.util.Random;
 
-/**
- * Represents the different types of cards possible in the game
- */
-enum CardType {
-    ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE,
-    REVERSE, SKIP, ADDTWO, ADDFOUR, WILDCARD
-}
-
-/**
- * Represents the different colors for cards in the game
- */
-enum Color {
-    BLUE, RED, GREEN, YELLOW, WILDCARD
-}
 
 /**
  * Represents the Cards used in the game
