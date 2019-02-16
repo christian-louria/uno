@@ -21,13 +21,13 @@ public class Server {
         DataInputStream inStream;
         DataOutputStream outStream;
 
-        /*try {
+        try {
             inStream = new DataInputStream(player.getInputStream());
             outStream = new DataOutputStream(player.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
-        }*/
+        }
 
         while(true){
 

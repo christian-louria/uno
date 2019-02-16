@@ -2,10 +2,11 @@ package GameParts;
 
 import Server.Room;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
-//public class Player extends Socket {
-public class Player {
+public class Player extends Socket {
+//public class Player {
 
     private ArrayList<Card> hand;
     private String name;
