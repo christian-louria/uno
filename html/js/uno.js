@@ -159,6 +159,14 @@ $(document).ready(function(){
   }
 
 
+///Leave Game Button
+	$(document).on("click", "#leaveGameButton", function(){
+		if (confirm("Are you sure you want to leave the room")){
+			location.reload()
+		}
+	})
+
+
 
 ///Home Screen Button
 	$(document).on("click", "#hostGameButton", function(){
@@ -178,6 +186,7 @@ $(document).ready(function(){
 		var gameName = $("#gameNameText").val()
 
 		/////socket
+		window.history.pushState('forward', null, './ROOMNAME-TODO');
 
 	})
 
@@ -185,7 +194,7 @@ $(document).ready(function(){
 		var gameName = $("#gameNameText").val()
 
 		//socket
-		
+		window.history.pushState('forward', null, './ROOMNAME-TODO');
 	})
 //////////
 	//load in images
