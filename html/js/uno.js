@@ -65,7 +65,12 @@ const cardURLs = [
 "skip-red.svg",
 "skip-yellow.svg",
 "wild.svg",
+"back.svg",
 ];
+
+const cardRatio = 0.7;
+const cardWidth = 240 * cardRatio;
+const cardHeight = 360 * cardRatio;
 
 class Card{
 	constructor(type, color){
@@ -80,10 +85,8 @@ class Card{
 
 		let img =document.getElementById(this.image);
 		if(currentPlayer){
-			const ratio = 0.7;
-			const width = 240 * ratio;
-			const height = 360 * ratio;
-			ctx.drawImage(img, idx*80+5, 0, width, height);
+			
+			ctx.drawImage(img, idx*80+5, 0, cardWidth, cardHeight);
 		}
 
 	}
@@ -336,9 +339,9 @@ function drawBoard(){
 	ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
 
 
-	// let backCard = 
-
-	// ctx.
+	let backCard  = document.getElementById("back.svg")
+	ctx.drawImage(backCard, normalizedWidth/2, normalizedHeight/2, cardWidth, cardHeight)
+	ctx.drawImage(backCard, normalizedWidth/1.98, normalizedHeight/2.02, cardWidth, cardHeight)
 
 
 	for(let i = 0; i < players.length; i++){
