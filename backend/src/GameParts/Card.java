@@ -32,16 +32,16 @@ public class Card {
      */
     Card(Random r) {
 
-        int colorPick = r.nextInt(5);
+        int colorPick = r.nextInt(113);
 
         // Generate the color
-        if(colorPick == 0) {
+        if(colorPick < 26) {
             this.color = Color.RED;
-        } else if(colorPick == 1) {
+        } else if(colorPick < 52) {
             this.color = Color.YELLOW;
-        } else if(colorPick == 2) {
+        } else if(colorPick < 78) {
             this.color = Color.GREEN;
-        } else if(colorPick == 3) {
+        } else if(colorPick < 104) {
             this.color = Color.BLUE;
         } else {
             this.color = Color.WILDCARD;
@@ -112,6 +112,41 @@ public class Card {
      */
     @Override
     public String toString() {
-        return String.format("%s:%s", this.color, this.type);
+
+        String name;
+
+        if(this.type == CardType.WILDCARD)
+            return "wild.svg";
+        else if(this.type == CardType.ADDFOUR)
+            return "draw-4.svg";
+        else if(this.type == CardType.ADDTWO) {
+            name = "draw-2-";
+            name += this.color + ".svg";
+            name = name.toLowerCase();
+            return name;
+        } else if(this.type == CardType.SKIP || this.type == CardType.REVERSE) {
+
+            name = this.type + "-";
+            name = name.toLowerCase();
+            name += this.color + ".svg";
+            name = name.toLowerCase();
+            return name;
+        }
+
+        // Deal with normal cases
+        name = this.type.ordinal() + "-";
+        name = name.toLowerCase();
+        name += this.color + ".svg";
+        name = name.toLowerCase();
+
+        return name;
+    }
+
+    public static void main(String[] args) {
+
+        Random r = new Random();
+        for(int i = 0; i < 12; i++){
+            System.out.println(new Card(r).toString());
+        }
     }
 }
