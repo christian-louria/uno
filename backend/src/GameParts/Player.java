@@ -1,35 +1,53 @@
 package GameParts;
 
+import Server.Room;
+
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Player extends Socket {
 
     private ArrayList<Card> hand;
     private String name;
+    private Room room;
 
     /**
      * Player constructor
-     * @param numCards Number of cards to deal to player
      * @param name Name of this player
      */
-    Player( int numCards, String name ) {
+    Player( String name ) {
 
-        Random r = new Random();
         hand = new ArrayList<>();
         this.name = name;
-
-        while(numCards-- > 0){
-            hand.add(new Card(r));
-        }
     }
+
+    /**
+     * Room setter for this player
+     * @param room Room the player is joining
+     */
+    public void setRoom(Room room){
+        this.room = room;
+    }
+
+
+    /**
+     * Room getter
+     * @return Room this player is in
+     */
+    public Room getRoom(){ return this.room; }
 
     /**
      * Hand getter
      * @return This player's hand
      */
     public ArrayList<Card> getHand() { return hand; }
+
+
+    /**
+     * Hand setter
+     * @param hand Hand of cards to give to this player
+     */
+    public void setHand(ArrayList<Card> hand) { this.hand = hand; }
 
 
     /**
