@@ -68,7 +68,6 @@ const cardURLs = [
 "skip-yellow.svg",
 "wild.svg",
 "back.svg",
-""
 ];
 
 const cardRatio = 0.45;
