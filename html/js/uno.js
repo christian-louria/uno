@@ -68,6 +68,7 @@ const cardURLs = [
 "skip-yellow.svg",
 "wild.svg",
 "back.svg",
+""
 ];
 
 const cardRatio = 0.45;
@@ -102,7 +103,9 @@ class Player{
 		let normalizedWidth = canvas.width / devicePixelRatio;
 		let normalizedHeight = canvas.height / devicePixelRatio;
 
+		let rotateAmmount = (-(this.cards.length / .8));
 		let startOffset = (normalizedWidth - this.cards.length * cardWidth * 0.4) / 2;
+		let ammountOffset = this.cards.length * -7;
 
 		for(let i = 0; i < this.cards.length; i++){
 			let card = this.cards[i];
@@ -111,11 +114,11 @@ class Player{
 			let moveUp = card.isSelected ? 80 : 40;
 
 			if(this.name === currentPlayer){
-				card.x = startOffset+ i * cardWidth * 0.4;
+				card.x = startOffset+ i * cardWidth * 0.4 + ammountOffset;
 				card.y = normalizedHeight - cardHeight - moveUp;
 			} else if (player === 1) {
 				img = document.getElementById("back.svg");
-				card.x = startOffset+ i * cardWidth * 0.4;
+				card.x = startOffset+ i * cardWidth * 0.4 + ammountOffset;
 				card.y = 30;
 			} else if (player === 2) {
 				ctx.translate(normalizedWidth/2, normalizedHeight/2);
@@ -124,11 +127,11 @@ class Player{
 				img = document.getElementById("back.svg");
 				card.x = startOffset+ i * cardWidth * 0.4;
 				card.y = -90;
-				
 			}
 			else if (player === 3) {
 				ctx.translate(normalizedWidth/2, normalizedHeight/2);
 				ctx.rotate(-90 * Math.PI / 180);
+				
 				ctx.translate(-normalizedWidth/2, -normalizedHeight/2);
 				img = document.getElementById("back.svg");
 				card.x = startOffset+ i * cardWidth * 0.4;
@@ -151,9 +154,8 @@ class Player{
 				ctx.rotate(90 * Math.PI / 180);
 				ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
 				
-				
+			
 			}
-
 		}
 	}
 
@@ -249,6 +251,25 @@ const mockGame = [
 			{
 				type: "4",
 				color: "blue"
+			},
+			{
+				type: "1",
+				color: "red"
+			},
+			{
+				type: "2",
+				color: "green"
+			},
+			{
+				type: "3",
+				color: "yellow"
+			},
+			{
+				type: "4",
+				color: "blue"
+			},{
+				type: "1",
+				color: "red"
 			}
 
 		]
@@ -271,7 +292,37 @@ const mockGame = [
 			{
 				type: "5",
 				color: "blue"
-			}
+			},{
+				type: "5",
+				color: "red"
+			},
+			{
+				type: "5",
+				color: "green"
+			},
+			{
+				type: "5",
+				color: "yellow"
+			},
+			{
+				type: "5",
+				color: "blue"
+			},{
+				type: "5",
+				color: "red"
+			},
+			{
+				type: "5",
+				color: "green"
+			},
+			{
+				type: "5",
+				color: "yellow"
+			},
+			{
+				type: "5",
+				color: "blue"
+			},
 
 		]
 	},
@@ -293,7 +344,37 @@ const mockGame = [
 			{
 				type: "5",
 				color: "blue"
-			}
+			},{
+				type: "5",
+				color: "red"
+			},
+			{
+				type: "5",
+				color: "green"
+			},
+			{
+				type: "5",
+				color: "yellow"
+			},
+			{
+				type: "5",
+				color: "blue"
+			},{
+				type: "5",
+				color: "red"
+			},
+			{
+				type: "5",
+				color: "green"
+			},
+			{
+				type: "5",
+				color: "yellow"
+			},
+			{
+				type: "5",
+				color: "blue"
+			},
 
 		]
 	}
@@ -316,7 +397,22 @@ const mockGame = [
 			{
 				type: "5",
 				color: "blue"
-			}
+			},{
+				type: "5",
+				color: "red"
+			},
+			{
+				type: "5",
+				color: "green"
+			},
+			{
+				type: "5",
+				color: "yellow"
+			},
+			{
+				type: "5",
+				color: "blue"
+			},
 
 		]
 	}
@@ -345,6 +441,17 @@ $(document).ready(function(){
     });
 
   }
+
+
+ 	$(document).on("click", "#callUnoButton", function(){
+		
+	});
+
+	$(document).on("click", "#challengeUnoButton", function(){
+		
+	});
+
+
 
 
 ///Leave Game Button
@@ -391,6 +498,9 @@ $(document).ready(function(){
 		$("#cards").append(`<img src="/img/cards/SVG/${cardURLs[i]}" id="${cardURLs[i]}"
 		 height="0px" width="0px" alt="${cardURLs[i]}">`);
 	}
+	$("#cards").append(`<img src="/img/background/unoBackground.svg" id="unoBackground.svg"
+		 height="0px" width="0px" alt="none">`);
+
 
 	startGame();
 
@@ -460,22 +570,24 @@ function drawBoard(){
 	let normalizedHeight = canvas.height / devicePixelRatio;
 
 	//clear background
-	ctx.fillStyle = "#FF0000";
-	ctx.beginPath();
-	ctx.rect(0,0, normalizedWidth, normalizedHeight);
-	ctx.fill();
-	ctx.closePath();
+	let background = document.getElementById("unoBackground.svg")
+	ctx.drawImage(background, 0, 0)
+	// ctx.fillStyle = "#FF0000";
+	// ctx.beginPath();
+	// ctx.rect(0,0, normalizedWidth, normalizedHeight);
+	// ctx.fill();
+	// ctx.closePath();
 
 	// ctx.translate(normalizedWidth/2, normalizedHeight/2)
 	// ctx.rotate(-20 * Math.PI / 180);
 	// ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
-	// ctx.font = "bolder 100px Arial";
+	// ctx.font = "bolder 30px Arial";
 	// ctx.fillStyle = "gold";
 	// ctx.textAlign = "center"; 
-	// ctx.fillText("UNO", normalizedWidth/1.72, normalizedHeight/5);
-	// ctx.lineWidth = "3";
+	// ctx.fillText("UNO", normalizedWidth/1.9, normalizedHeight/3);
+	// ctx.lineWidth = "1";
 	// ctx.strokeStyle = "white";
-	// ctx.strokeText("UNO", normalizedWidth/1.72, normalizedHeight/5);
+	// ctx.strokeText("UNO", normalizedWidth/1.9, normalizedHeight/3);
 	// ctx.translate(normalizedWidth/2, normalizedHeight/2)
 	// ctx.rotate(20 * Math.PI / 180);
 	// ctx.translate(-normalizedWidth/2, -normalizedHeight/2)
@@ -490,7 +602,7 @@ function drawBoard(){
 	ctx.drawImage(backCard, normalizedWidth/2 - 150, normalizedHeight/2  - 50, cardWidth, cardHeight);
 	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight);
 	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight);
-	ctx.drawImage(backCard, normalizedWidth/1.97 - 150, normalizedHeight/2.03 - 50, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.97 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight);
 	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight);
 	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/1.98 - 50, cardWidth, cardHeight);
 	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight);
