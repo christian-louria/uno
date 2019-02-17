@@ -114,7 +114,7 @@ class Player{
 
 			if(this.name === currentPlayer){
 				card.x = startOffset+ i * cardWidth * 0.4 + ammountOffset;
-				card.y = normalizedHeight - cardHeight - moveUp;
+				card.y = normalizedHeight - cardHeight - moveUp - 30;
 			} else if (player === 1) {
 				img = document.getElementById("back.svg");
 				card.x = startOffset+ i * cardWidth * 0.4 + ammountOffset;
@@ -598,13 +598,13 @@ function drawBoard(){
 	ctx.shadowOffsetY = 5;
 	ctx.shadowColor = 'RGBA(38, 42, 44, .5)';
 	ctx.shadowBlur = 40;
-	ctx.drawImage(backCard, normalizedWidth/2 - 150, normalizedHeight/2  - 50, cardWidth, cardHeight);
-	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight);
-	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight);
-	ctx.drawImage(backCard, normalizedWidth/1.97 - 150, normalizedHeight/2.02 - 50, cardWidth, cardHeight);
-	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight);
-	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/1.98 - 50, cardWidth, cardHeight);
-	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 - 50, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/2 - 150, normalizedHeight/2  -100, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 - 100, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/2.02 -100, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.97 - 150, normalizedHeight/2.02 -100, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 -100, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.98 - 150, normalizedHeight/1.98 -100, cardWidth, cardHeight);
+	ctx.drawImage(backCard, normalizedWidth/1.99 - 150, normalizedHeight/1.99 -100, cardWidth, cardHeight);
 	ctx.shadowOffsetX = 0;
 	ctx.shadowOffsetY = 0;
 	ctx.shadowColor = 'RGBA(0, 0, 0, 0)';
