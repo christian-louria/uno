@@ -1,5 +1,22 @@
 //vars
 
+
+const socket = new WebSocket('ws://129.21.114.49:8080');
+
+// Connection opened
+socket.onopen = function(event) {
+	socket.send('This is an test!');
+};
+
+socket.addEventListener('error', function (event) {
+	console.log("error", event.data);
+});
+
+// Listen for messages
+socket.addEventListener('message', function (event) {
+	console.log('Message from server ', event.data);
+});
+
 let pixelRatio = window.devicePixelRatio;
 let devMode = true;
 
@@ -501,7 +518,7 @@ $(document).ready(function(){
 		 height="0px" width="0px" alt="none">`);
 
 
-	startGame();
+
 
 });
 
