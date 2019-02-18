@@ -1,10 +1,11 @@
 package Server;
 
 import GameParts.Player;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -12,40 +13,90 @@ public class Server {
 
     private ArrayList<Room> currentRooms;
 
-    Server(){
-        currentRooms = new ArrayList<Room>();
-    }
+    /**
+     * Server constructor
+     */
+    Server(){ currentRooms = new ArrayList<Room>(); }
 
-    public void handleConnection(Socket player){
 
-        DataInputStream inStream;
-        DataOutputStream outStream;
+    /**
+     * Gets JSON from the client which will tell server what to do
+     * @param socket Socket to communicate over
+     * @return JSON string
+     */
+    private JSONObject getJSON(Socket socket) {
 
         try {
-            inStream = new DataInputStream(player.getInputStream());
-            outStream = new DataOutputStream(player.getOutputStream());
+            JSONObject jo = null;
+            BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            outStream.writeBytes("Hello world");
-            outStream.flush();
+            // Until the client sends good json keep asking after alerting of bad JSON
+            while(jo == null) {
+
+                try {
+
+                    // read the line and try to parse the json
+                    String jsonString = bf.readLine();
+                    jo = new JSONObject(jsonString);
+
+                } catch (JSONException e) {
+
+                    // JSON error occurred, tell client it was a bad request.
+                    sendJSONString("{\"status\":\"bad\"}", socket);
+                    jo = null;
+                }
+            }
+
+            return jo;
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(1);
+            return null;
         }
+    }
 
-        /*while(true){
 
-            int id = 3;
-            if(id == 1){
+    /**
+     * Sends JSON back to the client
+     * @param json JSON string to send
+     * @param socket Socket for the client
+     */
+    private void sendJSONString(String json, Socket socket) {
+
+        try {
+            BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            bf.write(json);
+            bf.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Handles each client
+     * @param player The client's player object
+     * @param socket The socket that the server and client will
+     *               communicate over
+     */
+    public void handleConnection(Player player, Socket socket){
+
+
+        while(true){
+
+            JSONObject jo = getJSON(socket);
+            String action = jo.getString("action");
+
+            if(action.equals("create")){
 
                 // Create room
-                String name = "Name";
-                Room room = new Room(name);
+                JSONObject payload = new JSONObject(jo.get("payload"));
+                Room room = new Room(payload.getString("roomId"));
                 room.setHost(player);
                 this.currentRooms.add(room);
                 player.setRoom(room);
 
-            } else if(id == 2){
+            } else if(action.equals("join")){
 
                 // Join room
                 String roomName = "Name";
@@ -62,7 +113,7 @@ public class Server {
                     }
                 }
 
-            } else if(id == 3){
+            } else if(action == "3"){
 
                 // Start game
                 try {
@@ -78,7 +129,7 @@ public class Server {
                     // alert this player is not the host
                 }
 
-            } else if(id == 4) {
+            } else if(action == "4") {
 
                 // Play card
                 int card = 0;
@@ -98,7 +149,7 @@ public class Server {
                 }
             }
 
-        }*/
+        }
 
         // Close the connection for this player
         /*try {

@@ -2,41 +2,44 @@ package Server;
 
 import GameParts.Player;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import com.peade.websocket.net.WebSocketServerSocket;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        ServerSocket sock;
+        ServerSocket serverSocket = new ServerSocket(8080, 5, InetAddress.getByName("0.0.0.0"));
         Server server = new Server();
 
-        try {
-            sock = new ServerSocket(8080, 5, InetAddress.getByName("0.0.0.0"));
+        while(true){
+            try {
 
-            WebSocketServerSocket webSocketServerSocket = new WebSocketServerSocket();
+                Socket socket = serverSocket.accept();
 
-            while(true){
                 try {
-                    Socket client = sock.accept();
-                    System.out.println("A client connected");
+                    BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String name = bf.readLine();
+                    System.out.println(name);
 
 
+                    BufferedWriter bfo = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                    bfo.write("Your name is: " + name);
+                    bfo.flush();
 
-                } catch (IOException e) {
+
+                    Player p = new Player(name);
+                    server.handleConnection(p, socket);
+
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-        } catch (IOException e){
 
-            e.printStackTrace();
-            return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
