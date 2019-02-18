@@ -75,7 +75,7 @@ public class Server {
 
     /**
      * Builds a response to a bad JSON request
-     * @param Message Message to be sent
+     * @param message Message to be sent
      */
     private void sendBadResponse(String message, Socket socket) {
 
@@ -102,8 +102,9 @@ public class Server {
         while(true){
 
             // Get JSON from the client
+            JSONObject jo;
             try {
-                JSONObject jo = getJSON(socket);
+                jo = getJSON(socket);
             } catch (NullPointerException e) {
 
                 // This will only be encountered if client disconnects
