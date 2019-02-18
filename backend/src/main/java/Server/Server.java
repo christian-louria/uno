@@ -7,16 +7,16 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Server {
 
-    private ArrayList<Room> currentRooms;
+    private HashMap<String, Room> currentRooms;
 
     /**
      * Server constructor
      */
-    Server(){ currentRooms = new ArrayList<Room>(); }
+    Server(){ currentRooms = new HashMap<String, Room>(); }
 
 
     /**
@@ -42,7 +42,7 @@ public class Server {
                 } catch (JSONException e) {
 
                     // JSON error occurred, tell client it was a bad request.
-                    sendJSONString("{\"status\":\"bad\"}", socket);
+                    sendBadResponse("jsonParsingError", socket);
                     jo = null;
                 }
             }
@@ -74,6 +74,24 @@ public class Server {
 
 
     /**
+     * Builds a response to a bad JSON request
+     * @param Message Message to be sent
+     */
+    private void sendBadResponse(String message, Socket socket) {
+
+        // payload not supplied
+        JSONObject badResp = new JSONObject();
+        badResp.put("status", "bad");
+        badResp.accumulate("payload", new HashMap<>(){{
+            put("errorMsg", message);
+        }});
+
+        // send response
+        sendJSONString(badResp.toString(), socket);
+    }
+
+
+    /**
      * Handles each client
      * @param player The client's player object
      * @param socket The socket that the server and client will
@@ -81,60 +99,145 @@ public class Server {
      */
     public void handleConnection(Player player, Socket socket){
 
-
         while(true){
 
-            JSONObject jo = getJSON(socket);
-            String action = jo.getString("action");
+            // Get JSON from the client
+            try {
+                JSONObject jo = getJSON(socket);
+            } catch (NullPointerException e) {
 
+                // This will only be encountered if client disconnects
+                // so get out of function
+                return;
+            }
+
+            String action;
+
+            try {
+
+                // Try to get the action object in the JSON string
+                action = jo.getString("action");
+
+            } catch (NullPointerException e){
+
+                sendBadResponse("actionNotFound", socket);
+                continue;
+            }
+
+            // Get the action object
             if(action.equals("create")){
 
-                // Create room
-                JSONObject payload = new JSONObject(jo.get("payload"));
-                Room room = new Room(payload.getString("roomId"));
-                room.setHost(player);
-                this.currentRooms.add(room);
-                player.setRoom(room);
+                // Try to parse JSON for the roomId
+                String roomId;
+                try {
+                    roomId = jo.getJSONObject("payload").getString("roomId");
+                } catch (JSONException e) {
+
+                    sendBadResponse("badPayload", socket);
+                    continue;
+                }
+
+                // Check if this room already exists
+                if(this.currentRooms.containsKey(roomId)) {
+
+                    sendBadResponse("roomAlreadyExists", socket);
+                    continue;
+                } else {
+
+                    // Create the room
+                    Room room = new Room(jo.getJSONObject("payload").getString("roomId"));
+
+                    // This player is the host
+                    room.setHost(player);
+                    room.getPlayers().add(player);
+
+                    // Add the room to the hash map
+                    this.currentRooms.put(room.getId(), room);
+
+                    // Assign the room to the player
+                    player.setRoom(room);
+                }
 
             } else if(action.equals("join")){
 
                 // Join room
-                String roomName = "Name";
-                for(Room room : this.currentRooms){
-                    if(room.getId().equals(roomName)){
+                // Try to parse JSON for the roomId
+                String roomId;
+                try {
+                    roomId = jo.getJSONObject("payload").getString("roomId");
+                } catch (JSONException e) {
 
-                        try {
-                            room.addPlayer(player);
-                        } catch (RoomFullException e) {
-
-                            // alert player that the room was full
-                        }
-
-                    }
+                    sendBadResponse("badPayload", socket);
+                    continue;
                 }
 
-            } else if(action == "3"){
+                // Check if the room exists
+                if(!this.currentRooms.containsKey(roomId)){
+
+                    sendBadResponse("roomDoesNotExist", socket);
+                    continue;
+                }
+
+                // Get the room
+                Room room = this.currentRooms.get(roomId);
+                try {
+
+                    // Check to see if the player is already in the room
+                    if(room.getPlayers().contains(player)) {
+
+                        sendBadResponse("playerAlreadyInRequestedRoom", socket);
+                        continue;
+                    } else {
+
+                        room.addPlayer(player);
+                    }
+
+                } catch (RoomFullException e) {
+
+                    sendBadResponse("requestedRoomFull", socket);
+                    continue;
+                }
+
+
+            } else if(action.equals("start")){
 
                 // Start game
                 try {
                     player.getRoom().startGame(player);
                 } catch (NotEnoughPlayersException e) {
 
-                    // alert that there are not enough
+                    sendBadResponse("notEnoughPlayers", socket);
+                    continue;
                 } catch (GameAlreadyStartedException e) {
 
-                    // alert that the game has already began
+                    sendBadResponse("gameStartedAlready", socket);
+                    continue;
                 } catch (InsufficientPrivilegesException e) {
 
-                    // alert this player is not the host
+                    sendBadResponse("insufficientPrivileges", socket);
+                    continue;
                 }
 
-            } else if(action == "4") {
+            } else if(action.equals("play")) {
 
                 // Play card
+                // get card by index
                 int card = 0;
                 //player.getRoom().playCard(player.getHand().get(card));
             } else {
+
+                sendBadResponse("unknownRequest", socket);
+                continue;
+            }
+
+            // Check if the player has a room before checking if
+            // game is over. Otherwise just continue
+            if(player.getRoom() != null){
+
+                // If the game is not started yet ignore
+                if(!player.getRoom().isGameStarted()){
+                    continue;
+                }
 
                 // Check if game is over
                 if(player.getRoom().isGameOver()){
@@ -142,13 +245,30 @@ public class Server {
                     for(Player p : player.getRoom().getPlayers()){
 
                         // Alert other players the game is over
-                        continue;
+                        JSONObject j = new JSONObject();
+                        j.put("status", "good");
+
+                        // If this player is the one that won tell them they won
+                        if(p.getHand().size() == 0) {
+
+                            j.put("payload", new HashMap<>(){{
+                                put("gameStatus", "over");
+                                put("userWon", "true");
+                            }});
+                        } else {
+                            j.put("payload", new HashMap<>(){{
+                                put("gameStatus", "complete");
+                                put("userWon", "false");
+                            }});
+                        }
+
+                        // send the response
+                        sendJSONString(j.toString(), socket);
                     }
 
                     break;
                 }
             }
-
         }
 
         // Close the connection for this player

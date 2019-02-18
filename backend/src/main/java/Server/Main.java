@@ -22,13 +22,6 @@ public class Main {
                 try {
                     BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String name = bf.readLine();
-                    System.out.println(name);
-
-
-                    BufferedWriter bfo = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                    bfo.write("Your name is: " + name);
-                    bfo.flush();
-
 
                     Player p = new Player(name);
                     server.handleConnection(p, socket);

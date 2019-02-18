@@ -44,6 +44,14 @@ public class Room {
     }
 
     /**
+     * GameStarted getter
+     * @return Whether or not the game was finished
+     */
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
+
+    /**
      * Starts the game
      * @param callee Player calling startGame
      * @throws NotEnoughPlayersException Only one person in the room
