@@ -11,24 +11,32 @@ import java.util.HashMap;
 
 public class Server {
 
-    private HashMap<String, Room> currentRooms;
+    private RoomHashMap roomHashMap;
+    private Socket socket;
+    private Player player;
 
     /**
      * Server constructor
+     * @param player Player that will be using this server
+     * @param socket Socket that communication will be conducted over
+     * @param roomHashMap Hash map that holds all the rooms
      */
-    Server(){ currentRooms = new HashMap<String, Room>(); }
+    Server(Player player, Socket socket, RoomHashMap roomHashMap){
+        this.roomHashMap = roomHashMap;
+        this.player = player;
+        this.socket = socket;
+    }
 
 
     /**
      * Gets JSON from the client which will tell server what to do
-     * @param socket Socket to communicate over
      * @return JSON string
      */
-    private JSONObject getJSON(Socket socket) {
+    private JSONObject getJSON() {
 
         try {
             JSONObject jo = null;
-            BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedReader bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 
             // Until the client sends good json keep asking after alerting of bad JSON
             while(jo == null) {
@@ -42,7 +50,7 @@ public class Server {
                 } catch (JSONException e) {
 
                     // JSON error occurred, tell client it was a bad request.
-                    sendBadResponse("jsonParsingError", socket);
+                    sendBadResponse("jsonParsingError");
                     jo = null;
                 }
             }
@@ -58,13 +66,12 @@ public class Server {
 
     /**
      * Sends JSON back to the client
-     * @param json JSON string to send
-     * @param socket Socket for the client
+     * @param json JSON string to sent
      */
-    private void sendJSONString(String json, Socket socket) {
+    private void sendJSONString(String json) {
 
         try {
-            BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
             bf.write(json);
             bf.flush();
         } catch (IOException e) {
@@ -77,7 +84,7 @@ public class Server {
      * Builds a response to a bad JSON request
      * @param message Message to be sent
      */
-    private void sendBadResponse(String message, Socket socket) {
+    private void sendBadResponse(String message) {
 
         // payload not supplied
         JSONObject badResp = new JSONObject();
@@ -87,24 +94,21 @@ public class Server {
         }});
 
         // send response
-        sendJSONString(badResp.toString(), socket);
+        sendJSONString(badResp.toString());
     }
 
 
     /**
      * Handles each client
-     * @param player The client's player object
-     * @param socket The socket that the server and client will
-     *               communicate over
      */
-    public void handleConnection(Player player, Socket socket){
+    public void run(){
 
         while(true){
 
             // Get JSON from the client
             JSONObject jo;
             try {
-                jo = getJSON(socket);
+                jo = getJSON();
             } catch (NullPointerException e) {
 
                 // This will only be encountered if client disconnects
@@ -121,7 +125,7 @@ public class Server {
 
             } catch (NullPointerException e){
 
-                sendBadResponse("actionNotFound", socket);
+                sendBadResponse("actionNotFound");
                 continue;
             }
 
@@ -134,14 +138,14 @@ public class Server {
                     roomId = jo.getJSONObject("payload").getString("roomId");
                 } catch (JSONException e) {
 
-                    sendBadResponse("badPayload", socket);
+                    sendBadResponse("badPayload");
                     continue;
                 }
 
                 // Check if this room already exists
-                if(this.currentRooms.containsKey(roomId)) {
+                if(this.roomHashMap.getRoomHashMap().containsKey(roomId)) {
 
-                    sendBadResponse("roomAlreadyExists", socket);
+                    sendBadResponse("roomAlreadyExists");
                     continue;
                 } else {
 
@@ -149,14 +153,14 @@ public class Server {
                     Room room = new Room(jo.getJSONObject("payload").getString("roomId"));
 
                     // This player is the host
-                    room.setHost(player);
-                    room.getPlayers().add(player);
+                    room.setHost(this.player);
+                    room.getPlayers().add(this.player);
 
                     // Add the room to the hash map
-                    this.currentRooms.put(room.getId(), room);
+                    this.roomHashMap.getRoomHashMap().put(room.getId(), room);
 
                     // Assign the room to the player
-                    player.setRoom(room);
+                    this.player.setRoom(room);
                 }
 
             } else if(action.equals("join")){
@@ -168,34 +172,34 @@ public class Server {
                     roomId = jo.getJSONObject("payload").getString("roomId");
                 } catch (JSONException e) {
 
-                    sendBadResponse("badPayload", socket);
+                    sendBadResponse("badPayload");
                     continue;
                 }
 
                 // Check if the room exists
-                if(!this.currentRooms.containsKey(roomId)){
+                if(!this.roomHashMap.getRoomHashMap().containsKey(roomId)){
 
-                    sendBadResponse("roomDoesNotExist", socket);
+                    sendBadResponse("roomDoesNotExist");
                     continue;
                 }
 
                 // Get the room
-                Room room = this.currentRooms.get(roomId);
+                Room room = this.roomHashMap.getRoomHashMap().get(roomId);
                 try {
 
                     // Check to see if the player is already in the room
-                    if(room.getPlayers().contains(player)) {
+                    if(room.getPlayers().contains(this.player)) {
 
-                        sendBadResponse("playerAlreadyInRequestedRoom", socket);
+                        sendBadResponse("playerAlreadyInRequestedRoom");
                         continue;
                     } else {
 
-                        room.addPlayer(player);
+                        room.addPlayer(this.player);
                     }
 
                 } catch (RoomFullException e) {
 
-                    sendBadResponse("requestedRoomFull", socket);
+                    sendBadResponse("requestedRoomFull");
                     continue;
                 }
 
@@ -204,18 +208,18 @@ public class Server {
 
                 // Start game
                 try {
-                    player.getRoom().startGame(player);
+                    this.player.getRoom().startGame(this.player);
                 } catch (NotEnoughPlayersException e) {
 
-                    sendBadResponse("notEnoughPlayers", socket);
+                    sendBadResponse("notEnoughPlayers");
                     continue;
                 } catch (GameAlreadyStartedException e) {
 
-                    sendBadResponse("gameStartedAlready", socket);
+                    sendBadResponse("gameStartedAlready");
                     continue;
                 } catch (InsufficientPrivilegesException e) {
 
-                    sendBadResponse("insufficientPrivileges", socket);
+                    sendBadResponse("insufficientPrivileges");
                     continue;
                 }
 
@@ -229,26 +233,26 @@ public class Server {
                 } catch (JSONException e) {
 
                     // Card index not supplied or is not an integer
-                    sendBadResponse("invalidCardIndex", socket);
+                    sendBadResponse("invalidCardIndex");
                     continue;
                 }
 
                 // Check if the game has been started
                 if(!player.getRoom().isGameStarted()) {
 
-                    sendBadResponse("gameNotStarted", socket);
+                    sendBadResponse("gameNotStarted");
                     continue;
                 }
 
                 // Make sure card index is within the correct range
                 if(cardIndex < 0 || cardIndex >= player.getHand().size()) {
 
-                    sendBadResponse("invalidCardIndex", socket);
+                    sendBadResponse("invalidCardIndex");
                     continue;
                 }
 
                 // get the card
-                Card c = player.getHand().get(cardIndex);
+                Card c = this.player.getHand().get(cardIndex);
 
                 // If the card is a wilcard we need to tell playCard the
                 // new color of the pile
@@ -266,36 +270,36 @@ public class Server {
                             if(newColor == Color.WILDCARD) {
 
                                 // new color cannot be wildcard
-                                sendBadResponse("illegalColorOption", socket);
+                                sendBadResponse("illegalColorOption");
                                 continue;
                             }
                         } catch (IllegalArgumentException e) {
 
                             // Color offered was not in the enum
-                            sendBadResponse("illegalColorOption", socket);
+                            sendBadResponse("illegalColorOption");
                             continue;
                         }
 
                         try {
 
                             // try to play the card
-                            player.getRoom().playCard(player, cardIndex, newColor);
+                            this.player.getRoom().playCard(this.player, cardIndex, newColor);
                         } catch (IllegalCardException e) {
 
                             // Card that was played could not be played for any
                             // number of reasons
-                            sendBadResponse("illegalCardPlayed", socket);
+                            sendBadResponse("illegalCardPlayed");
                             continue;
                         } catch (IllegalPlayException e) {
 
                             // not this player's turn to play
-                            sendBadResponse("illegalPlayException", socket);
+                            sendBadResponse("illegalPlayException");
                             continue;
                         }
 
                     } catch (JSONException e) {
 
-                        sendBadResponse("wildcardColorMissing", socket);
+                        sendBadResponse("wildcardColorMissing");
                         continue;
                     }
 
@@ -304,17 +308,17 @@ public class Server {
                     try {
 
                         // try to play the card
-                        player.getRoom().playCard(player, cardIndex, null);
+                        this.player.getRoom().playCard(this.player, cardIndex, null);
                     } catch (IllegalCardException e) {
 
                         // Card that was played could not be played for any
                         // number of reasons
-                        sendBadResponse("illegalCardPlayed", socket);
+                        sendBadResponse("illegalCardPlayed");
                         continue;
                     } catch (IllegalPlayException e) {
 
                         // not this player's turn to play
-                        sendBadResponse("illegalPlayException", socket);
+                        sendBadResponse("illegalPlayException");
                         continue;
                     }
                 }
@@ -322,23 +326,24 @@ public class Server {
 
             } else {
 
-                sendBadResponse("unknownRequest", socket);
+                sendBadResponse("unknownRequest");
                 continue;
             }
 
             // Check if the player has a room before checking if
             // game is over. Otherwise just continue
-            if(player.getRoom() != null){
+            if(this.player.getRoom() != null){
 
                 // If the game is not started yet ignore
-                if(!player.getRoom().isGameStarted()){
+                if(!this.player.getRoom().isGameStarted()){
                     continue;
                 }
 
                 // Check if game is over
-                if(player.getRoom().isGameOver()){
+                if(this.player.getRoom().isGameOver()){
 
-                    for(Player p : player.getRoom().getPlayers()){
+                    // Tell all other players that the game is over
+                    for(Player p : this.player.getRoom().getPlayers()){
 
                         // Alert other players the game is over
                         JSONObject j = new JSONObject();
@@ -359,20 +364,23 @@ public class Server {
                         }
 
                         // send the response
-                        sendJSONString(j.toString(), socket);
+                        sendJSONString(j.toString());
                     }
 
+                    // Remove the room from the list of rooms
+                    this.roomHashMap.getRoomHashMap().remove(this.player.getRoom().getId());
                     break;
                 }
             }
         }
 
         // Close the connection for this player
-        /*try {
-            player.close();
+        try {
+            this.socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+
+            // Shouldn't happen
+        }
     }
 }
 

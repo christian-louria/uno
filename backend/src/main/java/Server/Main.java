@@ -12,7 +12,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(8080, 5, InetAddress.getByName("0.0.0.0"));
-        Server server = new Server();
 
         while(true){
             try {
@@ -24,6 +23,7 @@ public class Main {
                     String name = bf.readLine();
 
                     Player p = new Player(name);
+                    Server server = new Server(p, socket);
                     server.handleConnection(p, socket);
 
                 } catch (Exception e) {
