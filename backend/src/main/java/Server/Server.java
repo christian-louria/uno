@@ -1,6 +1,6 @@
 package Server;
 
-import GameParts.Player;
+import GameParts.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -221,10 +221,105 @@ public class Server {
 
             } else if(action.equals("play")) {
 
-                // Play card
-                // get card by index
-                int card = 0;
-                //player.getRoom().playCard(player.getHand().get(card));
+                int cardIndex;
+                try {
+
+                    // Get the index of the card
+                    cardIndex = jo.getJSONObject("payload").getInt("cardIndex");
+                } catch (JSONException e) {
+
+                    // Card index not supplied or is not an integer
+                    sendBadResponse("invalidCardIndex", socket);
+                    continue;
+                }
+
+                // Check if the game has been started
+                if(!player.getRoom().isGameStarted()) {
+
+                    sendBadResponse("gameNotStarted", socket);
+                    continue;
+                }
+
+                // Make sure card index is within the correct range
+                if(cardIndex < 0 || cardIndex >= player.getHand().size()) {
+
+                    sendBadResponse("invalidCardIndex", socket);
+                    continue;
+                }
+
+                // get the card
+                Card c = player.getHand().get(cardIndex);
+
+                // If the card is a wilcard we need to tell playCard the
+                // new color of the pile
+                if(c.getType() == CardType.WILDCARD) {
+                    try {
+
+                        // Get the colorStr from the JSON
+                        String colorStr = jo.getJSONObject("payload").getString("wilcardColor");
+
+                        Color newColor;
+                        try {
+                            // Turn that color into the correct enum
+                            newColor = Color.valueOf(colorStr);
+
+                            if(newColor == Color.WILDCARD) {
+
+                                // new color cannot be wildcard
+                                sendBadResponse("illegalColorOption", socket);
+                                continue;
+                            }
+                        } catch (IllegalArgumentException e) {
+
+                            // Color offered was not in the enum
+                            sendBadResponse("illegalColorOption", socket);
+                            continue;
+                        }
+
+                        try {
+
+                            // try to play the card
+                            player.getRoom().playCard(player, cardIndex, newColor);
+                        } catch (IllegalCardException e) {
+
+                            // Card that was played could not be played for any
+                            // number of reasons
+                            sendBadResponse("illegalCardPlayed", socket);
+                            continue;
+                        } catch (IllegalPlayException e) {
+
+                            // not this player's turn to play
+                            sendBadResponse("illegalPlayException", socket);
+                            continue;
+                        }
+
+                    } catch (JSONException e) {
+
+                        sendBadResponse("wildcardColorMissing", socket);
+                        continue;
+                    }
+
+                } else {
+
+                    try {
+
+                        // try to play the card
+                        player.getRoom().playCard(player, cardIndex, null);
+                    } catch (IllegalCardException e) {
+
+                        // Card that was played could not be played for any
+                        // number of reasons
+                        sendBadResponse("illegalCardPlayed", socket);
+                        continue;
+                    } catch (IllegalPlayException e) {
+
+                        // not this player's turn to play
+                        sendBadResponse("illegalPlayException", socket);
+                        continue;
+                    }
+                }
+
+
             } else {
 
                 sendBadResponse("unknownRequest", socket);
