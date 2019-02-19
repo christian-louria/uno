@@ -11,20 +11,21 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
+        // Create the server socket
         ServerSocket serverSocket = new ServerSocket(8080, 5, InetAddress.getByName("0.0.0.0"));
+        RoomHashMap roomHashMap = new RoomHashMap();
 
         while(true){
             try {
 
+                // Connect new user
                 Socket socket = serverSocket.accept();
 
                 try {
-                    BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    String name = bf.readLine();
 
-                    Player p = new Player(name);
-                    Server server = new Server(p, socket);
-                    server.handleConnection(p, socket);
+                    // Create this user's handler and send them on their way
+                    ClientHandler handler = new ClientHandler(socket, roomHashMap);
+                    handler.run();
 
                 } catch (Exception e) {
                     e.printStackTrace();

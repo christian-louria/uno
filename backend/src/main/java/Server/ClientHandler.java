@@ -8,8 +8,9 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Random;
 
-public class Server {
+public class ClientHandler extends Thread {
 
     private RoomHashMap roomHashMap;
     private Socket socket;
@@ -17,13 +18,11 @@ public class Server {
 
     /**
      * Server constructor
-     * @param player Player that will be using this server
      * @param socket Socket that communication will be conducted over
      * @param roomHashMap Hash map that holds all the rooms
      */
-    Server(Player player, Socket socket, RoomHashMap roomHashMap){
+    ClientHandler(Socket socket, RoomHashMap roomHashMap) {
         this.roomHashMap = roomHashMap;
-        this.player = player;
         this.socket = socket;
     }
 
@@ -101,7 +100,25 @@ public class Server {
     /**
      * Handles each client
      */
+    @Override
     public void run(){
+
+        // Get this client's name from the client
+        BufferedReader bf;
+        String name;
+        try {
+
+            bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            name = bf.readLine();
+        } catch (IOException e) {
+
+            // shouldn't happen but otherwise give the user a random name
+            Random r = new Random();
+            name = "user" + r.nextInt(10000);
+        }
+
+        // Create their player
+        this.player = new Player(name);
 
         while(true){
 
@@ -143,7 +160,7 @@ public class Server {
                 }
 
                 // Check if this room already exists
-                if(this.roomHashMap.getRoomHashMap().containsKey(roomId)) {
+                if(this.roomHashMap.containsRoom(roomId)) {
 
                     sendBadResponse("roomAlreadyExists");
                     continue;
@@ -157,7 +174,7 @@ public class Server {
                     room.getPlayers().add(this.player);
 
                     // Add the room to the hash map
-                    this.roomHashMap.getRoomHashMap().put(room.getId(), room);
+                    this.roomHashMap.addRoom(room);
 
                     // Assign the room to the player
                     this.player.setRoom(room);
@@ -177,14 +194,14 @@ public class Server {
                 }
 
                 // Check if the room exists
-                if(!this.roomHashMap.getRoomHashMap().containsKey(roomId)){
+                if(!this.roomHashMap.containsRoom(roomId)){
 
                     sendBadResponse("roomDoesNotExist");
                     continue;
                 }
 
                 // Get the room
-                Room room = this.roomHashMap.getRoomHashMap().get(roomId);
+                Room room = this.roomHashMap.getRoom(roomId);
                 try {
 
                     // Check to see if the player is already in the room
@@ -368,7 +385,7 @@ public class Server {
                     }
 
                     // Remove the room from the list of rooms
-                    this.roomHashMap.getRoomHashMap().remove(this.player.getRoom().getId());
+                    this.roomHashMap.removeRoom(this.player.getRoom().getId());
                     break;
                 }
             }
