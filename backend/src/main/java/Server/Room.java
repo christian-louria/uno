@@ -31,7 +31,7 @@ public class Room {
      * @param player Player to add to the room
      * @throws RoomFullException Room is already at capacity
      */
-    public void addPlayer(Player player) throws RoomFullException {
+    public synchronized void addPlayer(Player player) throws RoomFullException {
 
         // Make sure this room has enough players
         if(this.players.size() < maximumPlayers){
@@ -47,7 +47,7 @@ public class Room {
      * GameStarted getter
      * @return Whether or not the game was finished
      */
-    public boolean isGameStarted() {
+    public synchronized boolean isGameStarted() {
         return gameStarted;
     }
 
@@ -58,7 +58,7 @@ public class Room {
      * @throws GameAlreadyStartedException Game is already being played
      * @throws InsufficientPrivilegesException The callee is not the host
      */
-    public void startGame(Player callee) throws NotEnoughPlayersException,
+    public synchronized void startGame(Player callee) throws NotEnoughPlayersException,
                                     GameAlreadyStartedException,
                                     InsufficientPrivilegesException {
 
@@ -99,7 +99,7 @@ public class Room {
      * Tests to see if the game is over
      * @return True if the game is over, false otherwise
      */
-    public boolean isGameOver(){
+    public synchronized boolean isGameOver(){
 
         // Check if any player has won the game
         for(Player p : this.players){
@@ -116,7 +116,7 @@ public class Room {
      * Host setter
      * @param player Player that will be the host
      */
-    public void setHost(Player player){
+    public synchronized void setHost(Player player){
         this.host = player;
     }
 
@@ -133,7 +133,7 @@ public class Room {
     /**
      * Points to the next player
      */
-    private void nextPlayer() {
+    private synchronized void nextPlayer() {
 
         // Deal reverse direction of play
         if(this.currentPlayDirection == Direction.LEFT){
@@ -152,7 +152,7 @@ public class Room {
     /**
      * Plays a card on the board
      */
-    public void playCard(Player callee, int cardLocation, Color wildcardColor)
+    public synchronized void playCard(Player callee, int cardLocation, Color wildcardColor)
             throws IllegalCardException, IllegalPlayException {
 
         // If it is not this players turn they cannot play the card
@@ -254,7 +254,7 @@ public class Room {
      * Simulates a player calling uno during the game
      * @param callee Person calling uno
      */
-    public void callUno(Player callee) throws IllegalUnoCallException {
+    public synchronized void callUno(Player callee) throws IllegalUnoCallException {
 
         boolean unoCorrectlyCalled = false;
 
@@ -301,78 +301,4 @@ public class Room {
         return players;
     }
 
-
-    public static void main(String[] args) {
-
-        Player grant = new Player("Grant");
-        Player alex = new Player("Alex");
-        Player tian = new Player("Tian");
-        Player tian2 = new Player("Tian2");
-        Player tian3 = new Player("Tian3");
-
-        Room r = new Room("Name");
-
-        try {
-            r.addPlayer(grant);
-            r.addPlayer(alex);
-            r.addPlayer(tian);
-        } catch (RoomFullException e) {
-
-            e.printStackTrace();
-        }
-
-        grant.getRoom().setHost(grant);
-
-        try {
-            grant.getRoom().startGame(grant);
-        } catch (NotEnoughPlayersException e) {
-
-            // alert that there are not enough
-            e.printStackTrace();
-        } catch (GameAlreadyStartedException e) {
-
-            // alert that the game has already began
-            e.printStackTrace();
-        } catch (InsufficientPrivilegesException e) {
-
-            // alert this player is not the host
-            e.printStackTrace();
-        }
-
-
-        /*try {
-            // Grant plays draw two blue on to reverse blue
-            grant.getRoom().playCard(grant, 0, null);
-
-            // tian plays 5 blue on draw two blue
-            grant.getRoom().playCard(tian, 1, null);
-
-            // grant plays 5 red on 5 blue
-            grant.getRoom().playCard(grant, 5, null);
-
-            // Alex plays a wildcard with the replacement as blue
-            grant.getRoom().playCard(alex, 5, Color.BLUE);
-
-        } catch (IllegalCardException e) {
-            e.printStackTrace();
-        } catch (IllegalPlayException e) {
-            e.printStackTrace();
-        }*/
-
-        grant.setHand(new ArrayList<Card>());
-        grant.getHand().add(grant.getRoom().deck.draw());
-        //grant.getHand().add(grant.getRoom().deck.draw());
-
-        try {
-            grant.getRoom().callUno(grant);
-        } catch (IllegalUnoCallException e) {
-            e.printStackTrace();
-        }
-
-
-        boolean gameOver = grant.getRoom().isGameOver();
-        gameOver = grant.getRoom().isGameOver();
-
-        return;
-    }
 }
