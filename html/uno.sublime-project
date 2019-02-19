@@ -1,0 +1,14 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"build_systems":
+
+	{
+		"name": "SASS builder",
+		"cmd": "sass scss/all.scss scss/all.css"
+	}
+}
