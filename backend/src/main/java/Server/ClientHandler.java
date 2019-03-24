@@ -62,11 +62,14 @@ public class ClientHandler extends Thread {
 
                 // Read until we hit 2 CRLFs signaling end of headers
                 String header;
-                while(!(header = bf.readLine()).equals("")) {
-
-                    // Get the web socket secret key
-                    if(header.contains("Sec-WebSocket-Key:"))
-                        key = header.substring(header.indexOf(":") + 2);
+                try {
+                    while(!(header = bf.readLine()).equals("")) {
+                        // Get the web socket secret key
+                        if(header.contains("Sec-WebSocket-Key:"))
+                            key = header.substring(header.indexOf(":") + 2);
+                    }
+                } catch (NullPointerException e) {
+                    continue;
                 }
 
                 // Until the client sends good json keep asking after alerting of bad JSON
@@ -169,26 +172,6 @@ public class ClientHandler extends Thread {
 
         JSONObject json = getJSON();
 
-        // Get this client's name from the client
-        BufferedReader bf;
-        String name;
-        try {
-
-            bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-            name = bf.readLine();
-        } catch (IOException e) {
-
-            // shouldn't happen but otherwise give the user a random name
-            Random r = new Random();
-            name = "user" + r.nextInt(10000);
-        }
-
-        // Alert user that their name request was successful
-        sendGoodResponse(json.getString("key"));
-
-        // Create their player
-        this.player = new Player(name);
-
         while(true){
 
             // Get JSON from the client
@@ -216,6 +199,12 @@ public class ClientHandler extends Thread {
 
             // Get the action object
             if(action.equals("create")){
+
+                // If this player is not created yet they must send a name
+                if(this.player == null) {
+                    sendBadResponse("mustLogIn", jo.getString("key"));
+                    continue;
+                }
 
                 // Try to parse JSON for the roomId
                 String roomId;
@@ -249,6 +238,12 @@ public class ClientHandler extends Thread {
                 }
 
             } else if(action.equals("join")){
+
+                // If this player is not created yet they must send a name
+                if(this.player == null) {
+                    sendBadResponse("mustLogIn", jo.getString("key"));
+                    continue;
+                }
 
                 // Join room
                 // Try to parse JSON for the roomId
@@ -290,6 +285,12 @@ public class ClientHandler extends Thread {
 
             } else if(action.equals("start")){
 
+                // If this player is not created yet they must send a name
+                if(this.player == null) {
+                    sendBadResponse("mustLogIn", jo.getString("key"));
+                    continue;
+                }
+
                 // Start game
                 try {
                     this.player.getRoom().startGame(this.player);
@@ -312,6 +313,12 @@ public class ClientHandler extends Thread {
                 }
 
             } else if(action.equals("play")) {
+
+                // If this player is not created yet they must send a name
+                if(this.player == null) {
+                    sendBadResponse("mustLogIn", jo.getString("key"));
+                    continue;
+                }
 
                 int cardIndex;
                 try {
@@ -411,7 +418,25 @@ public class ClientHandler extends Thread {
                     }
                 }
 
-            } else {
+            } else if (action.equals("name")) {
+
+                // If this player is already created fail
+                if(this.player != null) {
+                    sendBadResponse("alreadyLoggedIn", jo.getString("key"));
+                    continue;
+                }
+
+                try {
+                    // Create the player object
+                    this.player = new Player(jo.getJSONObject("payload").getString("name"));
+                    sendGoodResponse(jo.getString("key"));
+                } catch (JSONException e) {
+
+                    sendBadResponse("badPayload", jo.getString("key"));
+                    continue;
+                }
+
+            }  else {
 
                 sendBadResponse("unknownRequest", jo.getString("key"));
                 continue;
