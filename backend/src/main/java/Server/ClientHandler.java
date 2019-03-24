@@ -86,7 +86,7 @@ public class ClientHandler extends Thread {
         try {
             // Create the new writing object and send the message on its way
             BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-            bf.write("HTTP/1.1 101 Ok\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: " + json + "\r\n");
+            bf.write("HTTP/1.1 101 Ok\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ok\r\n\r\n" + json + "\r\n");
             bf.flush();
         } catch (IOException e) {
             System.err.println("Error sending response");
