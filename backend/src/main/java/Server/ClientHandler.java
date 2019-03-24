@@ -9,6 +9,8 @@ import java.io.*;
 import java.net.Socket;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -31,15 +33,16 @@ public class ClientHandler extends Thread {
 
     /**
      * Sends back a good response when successful
+     * @param key Secret key to send
      */
-    private void sendGoodResponse(){
+    private void sendGoodResponse(String key){
 
         // payload not supplied
         JSONObject goodResp = new JSONObject();
         goodResp.put("status", "good");
 
         // send response
-        sendJSONString(goodResp.toString());
+        sendJSONString(goodResp.toString(), key);
     }
 
 
@@ -51,31 +54,38 @@ public class ClientHandler extends Thread {
 
         try {
             JSONObject jo = null;
-            BufferedReader bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            String key = null;
 
-            String header = null;
-            while(!header.equals("")) {
-                header = bf.readLine();
-
-                if(header.contains("Sec-WebSocket-Key:"))
-                    System.out.println(header);
-            }
-
-            // Until the client sends good json keep asking after alerting of bad JSON
             while(jo == null) {
+
+                BufferedReader bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+
+                // Read until we hit 2 CRLFs signaling end of headers
+                String header;
+                while(!(header = bf.readLine()).equals("")) {
+
+                    // Get the web socket secret key
+                    if(header.contains("Sec-WebSocket-Key:"))
+                        key = header.substring(header.indexOf(":") + 2);
+                }
+
+                // Until the client sends good json keep asking after alerting of bad JSON
                 try {
 
                     // read the line and try to parse the json
                     String jsonString = bf.readLine();
                     jo = new JSONObject(jsonString);
 
-                } catch (JSONException e) {
+                } catch (JSONException | NullPointerException e) {
 
                     // JSON error occurred, tell client it was a bad request.
-                    sendBadResponse("jsonParsingError");
+                    sendBadResponse("jsonParsingError", key);
                     jo = null;
                 }
             }
+
+            if(key != null)
+                jo.put("key", key);
 
             return jo;
 
@@ -88,14 +98,27 @@ public class ClientHandler extends Thread {
 
     /**
      * Generates the necessary headers for the responses
+     * @param key Secret key shared at beginning of previos request
      * @return String containing the beginning responses
      */
-    private String getWebSocketResponseHeaders() {
+    private String getWebSocketResponseHeaders(String key) {
 
         StringBuffer buffer = new StringBuffer();
         buffer.append("HTTP/1.1 101 Ok\r\n");
         buffer.append("Upgrade: websocket\r\n");
-        buffer.append("Connection: upgrade\r\n\r\n");
+        buffer.append("Connection: upgrade\r\n");
+
+        try {
+            String digestStr = key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] messageDigest = md.digest(digestStr.getBytes());
+            key = Base64.getEncoder().encodeToString(messageDigest);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        buffer.append("Sec-WebSocket-Accept: " + key + "\r\n\r\n");
 
         return buffer.toString();
     }
@@ -104,13 +127,14 @@ public class ClientHandler extends Thread {
     /**
      * Sends JSON back to the client
      * @param json JSON string to sent
+     * @param key Secret key
      */
-    private void sendJSONString(String json) {
+    private void sendJSONString(String json, String key) {
 
         try {
             // Create the new writing object and send the message on its way
             BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-            bf.write(getWebSocketResponseHeaders() + json + "\r\n");
+            bf.write(getWebSocketResponseHeaders(key) + json + "\r\n");
             bf.flush();
         } catch (IOException e) {
             System.err.println("Error sending response");
@@ -121,8 +145,9 @@ public class ClientHandler extends Thread {
     /**
      * Builds a response to a bad JSON request
      * @param message Message to be sent
+     * @param key Secret key
      */
-    private void sendBadResponse(String message) {
+    private void sendBadResponse(String message, String key) {
 
         // payload not supplied
         JSONObject badResp = new JSONObject();
@@ -132,7 +157,7 @@ public class ClientHandler extends Thread {
         }});
 
         // send response
-        sendJSONString(badResp.toString());
+        sendJSONString(badResp.toString(), key);
     }
 
 
@@ -141,6 +166,8 @@ public class ClientHandler extends Thread {
      */
     @Override
     public void run(){
+
+        JSONObject json = getJSON();
 
         // Get this client's name from the client
         BufferedReader bf;
@@ -157,7 +184,7 @@ public class ClientHandler extends Thread {
         }
 
         // Alert user that their name request was successful
-        sendGoodResponse();
+        sendGoodResponse(json.getString("key"));
 
         // Create their player
         this.player = new Player(name);
@@ -183,7 +210,7 @@ public class ClientHandler extends Thread {
             } catch (NullPointerException | JSONException e){
 
                 // Action was not included in the message
-                sendBadResponse("actionNotFound");
+                sendBadResponse("actionNotFound", jo.getString("key"));
                 continue;
             }
 
@@ -196,14 +223,14 @@ public class ClientHandler extends Thread {
                     roomId = jo.getJSONObject("payload").getString("roomId");
                 } catch (JSONException e) {
 
-                    sendBadResponse("badPayload");
+                    sendBadResponse("badPayload", jo.getString("key"));
                     continue;
                 }
 
                 // Check if this room already exists
                 if(this.roomHashMap.containsRoom(roomId)) {
 
-                    sendBadResponse("roomAlreadyExists");
+                    sendBadResponse("roomAlreadyExists", jo.getString("key"));
                     continue;
                 } else {
 
@@ -230,14 +257,14 @@ public class ClientHandler extends Thread {
                     roomId = jo.getJSONObject("payload").getString("roomId");
                 } catch (JSONException e) {
 
-                    sendBadResponse("badPayload");
+                    sendBadResponse("badPayload", jo.getString("key"));
                     continue;
                 }
 
                 // Check if the room exists
                 if(!this.roomHashMap.containsRoom(roomId)){
 
-                    sendBadResponse("roomDoesNotExist");
+                    sendBadResponse("roomDoesNotExist", jo.getString("key"));
                     continue;
                 }
 
@@ -248,7 +275,7 @@ public class ClientHandler extends Thread {
                     // Check to see if the player is already in the room
                     if(room.getPlayers().contains(this.player)) {
 
-                        sendBadResponse("playerAlreadyInRequestedRoom");
+                        sendBadResponse("playerAlreadyInRequestedRoom", jo.getString("key"));
                         continue;
                     } else {
 
@@ -257,7 +284,7 @@ public class ClientHandler extends Thread {
 
                 } catch (RoomFullException e) {
 
-                    sendBadResponse("requestedRoomFull");
+                    sendBadResponse("requestedRoomFull", jo.getString("key"));
                     continue;
                 }
 
@@ -269,18 +296,18 @@ public class ClientHandler extends Thread {
                 } catch (NotEnoughPlayersException e) {
 
                     // The room does not have at least 2 players
-                    sendBadResponse("notEnoughPlayers");
+                    sendBadResponse("notEnoughPlayers", jo.getString("key"));
                     continue;
                 } catch (GameAlreadyStartedException e) {
 
                     // The game is already started and cannot be started again
-                    sendBadResponse("gameStartedAlready");
+                    sendBadResponse("gameStartedAlready", jo.getString("key"));
                     continue;
                 } catch (InsufficientPrivilegesException e) {
 
                     // The person who tried to start the program is not
                     // the host of the room
-                    sendBadResponse("insufficientPrivileges");
+                    sendBadResponse("insufficientPrivileges", jo.getString("key"));
                     continue;
                 }
 
@@ -294,21 +321,21 @@ public class ClientHandler extends Thread {
                 } catch (JSONException e) {
 
                     // Card index not supplied or is not an integer
-                    sendBadResponse("invalidCardIndex");
+                    sendBadResponse("invalidCardIndex", jo.getString("key"));
                     continue;
                 }
 
                 // Check if the game has been started
                 if(!player.getRoom().isGameStarted()) {
 
-                    sendBadResponse("gameNotStarted");
+                    sendBadResponse("gameNotStarted", jo.getString("key"));
                     continue;
                 }
 
                 // Make sure card index is within the correct range
                 if(cardIndex < 0 || cardIndex >= player.getHand().size()) {
 
-                    sendBadResponse("invalidCardIndex");
+                    sendBadResponse("invalidCardIndex", jo.getString("key"));
                     continue;
                 }
 
@@ -331,13 +358,13 @@ public class ClientHandler extends Thread {
                             if(newColor == Color.WILDCARD) {
 
                                 // new color cannot be wildcard
-                                sendBadResponse("illegalColorOption");
+                                sendBadResponse("illegalColorOption", jo.getString("key"));
                                 continue;
                             }
                         } catch (IllegalArgumentException e) {
 
                             // Color offered was not in the enum
-                            sendBadResponse("illegalColorOption");
+                            sendBadResponse("illegalColorOption", jo.getString("key"));
                             continue;
                         }
 
@@ -349,18 +376,18 @@ public class ClientHandler extends Thread {
 
                             // Card that was played could not be played for any
                             // number of reasons
-                            sendBadResponse("illegalCardPlayed");
+                            sendBadResponse("illegalCardPlayed", jo.getString("key"));
                             continue;
                         } catch (IllegalPlayException e) {
 
                             // not this player's turn to play
-                            sendBadResponse("illegalPlayException");
+                            sendBadResponse("illegalPlayException", jo.getString("key"));
                             continue;
                         }
 
                     } catch (JSONException e) {
 
-                        sendBadResponse("wildcardColorMissing");
+                        sendBadResponse("wildcardColorMissing", jo.getString("key"));
                         continue;
                     }
 
@@ -374,19 +401,19 @@ public class ClientHandler extends Thread {
 
                         // Card that was played could not be played for any
                         // number of reasons
-                        sendBadResponse("illegalCardPlayed");
+                        sendBadResponse("illegalCardPlayed", jo.getString("key"));
                         continue;
                     } catch (IllegalPlayException e) {
 
                         // not this player's turn to play
-                        sendBadResponse("illegalPlayException");
+                        sendBadResponse("illegalPlayException", jo.getString("key"));
                         continue;
                     }
                 }
 
             } else {
 
-                sendBadResponse("unknownRequest");
+                sendBadResponse("unknownRequest", jo.getString("key"));
                 continue;
             }
 
@@ -424,7 +451,7 @@ public class ClientHandler extends Thread {
                         }
 
                         // send the response
-                        sendJSONString(j.toString());
+                        sendJSONString(j.toString(), jo.getString("key"));
                     }
 
                     // Remove the room from the list of rooms
@@ -434,7 +461,7 @@ public class ClientHandler extends Thread {
             }
 
             // If this is reached everything is all good
-            sendGoodResponse();
+            sendGoodResponse(jo.getString("key"));
         }
 
         // Close the connection for this player
