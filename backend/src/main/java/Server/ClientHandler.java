@@ -61,20 +61,21 @@ public class ClientHandler extends Thread {
 
                 BufferedReader bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 
-                // Read until we hit 2 CRLFs signaling end of headers
-                String header;
-                try {
-                    while(!(header = bf.readLine()).equals("")) {
-                        // Get the web socket secret key
-                        if(header.contains("Sec-WebSocket-Key:"))
-                            key = header.substring(header.indexOf(":") + 2);
-                    }
-                } catch (NullPointerException e) {
-                    continue;
-                }
-
-                // If this is the first request do not require JSON
+                // if its the first request handle headers
                 if(firstReq) {
+
+                    // Read until we hit 2 CRLFs signaling end of headers
+                    String header;
+                    try {
+                        while(!(header = bf.readLine()).equals("")) {
+                            // Get the web socket secret key
+                            if(header.contains("Sec-WebSocket-Key:"))
+                                key = header.substring(header.indexOf(":") + 2);
+                        }
+                    } catch (NullPointerException e) {
+                        continue;
+                    }
+
                     jo = new JSONObject();
                     continue;
                 }
@@ -179,8 +180,9 @@ public class ClientHandler extends Thread {
 
         // Accept client handshake and get first secret key
         JSONObject json = getJSON(true);
+        String key = json.getString("key");
 
-        sendGoodResponse(json.getString("key"));
+        sendGoodResponse(key);
 
         while(true){
 
@@ -203,7 +205,7 @@ public class ClientHandler extends Thread {
             } catch (NullPointerException | JSONException e){
 
                 // Action was not included in the message
-                sendBadResponse("actionNotFound", jo.getString("key"));
+                sendBadResponse("actionNotFound", key);
                 continue;
             }
 
@@ -212,7 +214,7 @@ public class ClientHandler extends Thread {
 
                 // If this player is not created yet they must send a name
                 if(this.player == null) {
-                    sendBadResponse("mustLogIn", jo.getString("key"));
+                    sendBadResponse("mustLogIn", key);
                     continue;
                 }
 
@@ -222,14 +224,14 @@ public class ClientHandler extends Thread {
                     roomId = jo.getJSONObject("payload").getString("roomId");
                 } catch (JSONException e) {
 
-                    sendBadResponse("badPayload", jo.getString("key"));
+                    sendBadResponse("badPayload", key);
                     continue;
                 }
 
                 // Check if this room already exists
                 if(this.roomHashMap.containsRoom(roomId)) {
 
-                    sendBadResponse("roomAlreadyExists", jo.getString("key"));
+                    sendBadResponse("roomAlreadyExists", key);
                     continue;
                 } else {
 
@@ -251,7 +253,7 @@ public class ClientHandler extends Thread {
 
                 // If this player is not created yet they must send a name
                 if(this.player == null) {
-                    sendBadResponse("mustLogIn", jo.getString("key"));
+                    sendBadResponse("mustLogIn", key);
                     continue;
                 }
 
@@ -262,14 +264,14 @@ public class ClientHandler extends Thread {
                     roomId = jo.getJSONObject("payload").getString("roomId");
                 } catch (JSONException e) {
 
-                    sendBadResponse("badPayload", jo.getString("key"));
+                    sendBadResponse("badPayload", key);
                     continue;
                 }
 
                 // Check if the room exists
                 if(!this.roomHashMap.containsRoom(roomId)){
 
-                    sendBadResponse("roomDoesNotExist", jo.getString("key"));
+                    sendBadResponse("roomDoesNotExist", key);
                     continue;
                 }
 
@@ -280,7 +282,7 @@ public class ClientHandler extends Thread {
                     // Check to see if the player is already in the room
                     if(room.getPlayers().contains(this.player)) {
 
-                        sendBadResponse("playerAlreadyInRequestedRoom", jo.getString("key"));
+                        sendBadResponse("playerAlreadyInRequestedRoom", key);
                         continue;
                     } else {
 
@@ -289,7 +291,7 @@ public class ClientHandler extends Thread {
 
                 } catch (RoomFullException e) {
 
-                    sendBadResponse("requestedRoomFull", jo.getString("key"));
+                    sendBadResponse("requestedRoomFull", key);
                     continue;
                 }
 
@@ -297,7 +299,7 @@ public class ClientHandler extends Thread {
 
                 // If this player is not created yet they must send a name
                 if(this.player == null) {
-                    sendBadResponse("mustLogIn", jo.getString("key"));
+                    sendBadResponse("mustLogIn", key);
                     continue;
                 }
 
@@ -307,18 +309,18 @@ public class ClientHandler extends Thread {
                 } catch (NotEnoughPlayersException e) {
 
                     // The room does not have at least 2 players
-                    sendBadResponse("notEnoughPlayers", jo.getString("key"));
+                    sendBadResponse("notEnoughPlayers", key);
                     continue;
                 } catch (GameAlreadyStartedException e) {
 
                     // The game is already started and cannot be started again
-                    sendBadResponse("gameStartedAlready", jo.getString("key"));
+                    sendBadResponse("gameStartedAlready", key);
                     continue;
                 } catch (InsufficientPrivilegesException e) {
 
                     // The person who tried to start the program is not
                     // the host of the room
-                    sendBadResponse("insufficientPrivileges", jo.getString("key"));
+                    sendBadResponse("insufficientPrivileges", key);
                     continue;
                 }
 
@@ -326,7 +328,7 @@ public class ClientHandler extends Thread {
 
                 // If this player is not created yet they must send a name
                 if(this.player == null) {
-                    sendBadResponse("mustLogIn", jo.getString("key"));
+                    sendBadResponse("mustLogIn", key);
                     continue;
                 }
 
@@ -338,21 +340,21 @@ public class ClientHandler extends Thread {
                 } catch (JSONException e) {
 
                     // Card index not supplied or is not an integer
-                    sendBadResponse("invalidCardIndex", jo.getString("key"));
+                    sendBadResponse("invalidCardIndex", key);
                     continue;
                 }
 
                 // Check if the game has been started
                 if(!player.getRoom().isGameStarted()) {
 
-                    sendBadResponse("gameNotStarted", jo.getString("key"));
+                    sendBadResponse("gameNotStarted", key);
                     continue;
                 }
 
                 // Make sure card index is within the correct range
                 if(cardIndex < 0 || cardIndex >= player.getHand().size()) {
 
-                    sendBadResponse("invalidCardIndex", jo.getString("key"));
+                    sendBadResponse("invalidCardIndex", key);
                     continue;
                 }
 
@@ -375,13 +377,13 @@ public class ClientHandler extends Thread {
                             if(newColor == Color.WILDCARD) {
 
                                 // new color cannot be wildcard
-                                sendBadResponse("illegalColorOption", jo.getString("key"));
+                                sendBadResponse("illegalColorOption", key);
                                 continue;
                             }
                         } catch (IllegalArgumentException e) {
 
                             // Color offered was not in the enum
-                            sendBadResponse("illegalColorOption", jo.getString("key"));
+                            sendBadResponse("illegalColorOption", key);
                             continue;
                         }
 
@@ -393,18 +395,18 @@ public class ClientHandler extends Thread {
 
                             // Card that was played could not be played for any
                             // number of reasons
-                            sendBadResponse("illegalCardPlayed", jo.getString("key"));
+                            sendBadResponse("illegalCardPlayed", key);
                             continue;
                         } catch (IllegalPlayException e) {
 
                             // not this player's turn to play
-                            sendBadResponse("illegalPlayException", jo.getString("key"));
+                            sendBadResponse("illegalPlayException", key);
                             continue;
                         }
 
                     } catch (JSONException e) {
 
-                        sendBadResponse("wildcardColorMissing", jo.getString("key"));
+                        sendBadResponse("wildcardColorMissing", key);
                         continue;
                     }
 
@@ -418,12 +420,12 @@ public class ClientHandler extends Thread {
 
                         // Card that was played could not be played for any
                         // number of reasons
-                        sendBadResponse("illegalCardPlayed", jo.getString("key"));
+                        sendBadResponse("illegalCardPlayed", key);
                         continue;
                     } catch (IllegalPlayException e) {
 
                         // not this player's turn to play
-                        sendBadResponse("illegalPlayException", jo.getString("key"));
+                        sendBadResponse("illegalPlayException", key);
                         continue;
                     }
                 }
@@ -432,7 +434,7 @@ public class ClientHandler extends Thread {
 
                 // If this player is already created fail
                 if(this.player != null) {
-                    sendBadResponse("alreadyLoggedIn", jo.getString("key"));
+                    sendBadResponse("alreadyLoggedIn", key);
                     continue;
                 }
 
@@ -441,13 +443,13 @@ public class ClientHandler extends Thread {
                     this.player = new Player(jo.getJSONObject("payload").getString("name"));
                 } catch (JSONException e) {
 
-                    sendBadResponse("badPayload", jo.getString("key"));
+                    sendBadResponse("badPayload", key);
                     continue;
                 }
 
             }  else {
 
-                sendBadResponse("unknownRequest", jo.getString("key"));
+                sendBadResponse("unknownRequest", key);
                 continue;
             }
 
@@ -485,7 +487,7 @@ public class ClientHandler extends Thread {
                         }
 
                         // send the response
-                        sendJSONString(j.toString(), jo.getString("key"));
+                        sendJSONString(j.toString(), key);
                     }
 
                     // Remove the room from the list of rooms
@@ -495,7 +497,7 @@ public class ClientHandler extends Thread {
             }
 
             // If this is reached everything is all good
-            sendGoodResponse(jo.getString("key"));
+            sendGoodResponse(key);
         }
 
         // Close the connection for this player
