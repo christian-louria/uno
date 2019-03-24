@@ -197,6 +197,8 @@ public class ClientHandler extends Thread {
                 return;
             }
 
+            System.out.println("received request");
+
             String action;
             try {
 
