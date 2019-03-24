@@ -48,9 +48,10 @@ public class ClientHandler extends Thread {
 
     /**
      * Gets JSON from the client which will tell server what to do
+     * @param firstReq dictates if this is the first request or not
      * @return JSON string
      */
-    private JSONObject getJSON() {
+    private JSONObject getJSON(boolean firstReq) {
 
         try {
             JSONObject jo = null;
@@ -69,6 +70,12 @@ public class ClientHandler extends Thread {
                             key = header.substring(header.indexOf(":") + 2);
                     }
                 } catch (NullPointerException e) {
+                    continue;
+                }
+
+                // If this is the first request do not require JSON
+                if(firstReq) {
+                    jo = new JSONObject();
                     continue;
                 }
 
@@ -170,14 +177,15 @@ public class ClientHandler extends Thread {
     @Override
     public void run(){
 
-        JSONObject json = getJSON();
+        // Accept client handshake and get first secret key
+        JSONObject json = getJSON(true);
 
         while(true){
 
             // Get JSON from the client
             JSONObject jo;
             try {
-                jo = getJSON();
+                jo = getJSON(false);
             } catch (NullPointerException e) {
 
                 // This will only be encountered if client disconnects
@@ -429,7 +437,6 @@ public class ClientHandler extends Thread {
                 try {
                     // Create the player object
                     this.player = new Player(jo.getJSONObject("payload").getString("name"));
-                    sendGoodResponse(jo.getString("key"));
                 } catch (JSONException e) {
 
                     sendBadResponse("badPayload", jo.getString("key"));
