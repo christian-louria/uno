@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="70ca0e88-0060-413e-abf5-fea14fe2b1a9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_json_json_20180130.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_json_json_20180130.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/backend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/backend.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/html/js/uno.js" beforeDir="false" afterPath="$PROJECT_DIR$/html/js/uno.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/html/scss/all.scss" beforeDir="false" afterPath="$PROJECT_DIR$/html/scss/all.scss" afterDir="false" />
-    </list>
+    <list default="true" id="70ca0e88-0060-413e-abf5-fea14fe2b1a9" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,8 +52,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend/src/main/java/Server/ClientHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="64" selection-start-line="64" selection-end-line="64" />
+            <state relative-caret-position="480">
+              <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -301,15 +295,16 @@
       <workItem from="1550546109318" duration="7000" />
       <workItem from="1550614659294" duration="415000" />
       <workItem from="1550626447397" duration="4000" />
-      <workItem from="1553385924583" duration="3786000" />
+      <workItem from="1553385924583" duration="4091000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="17355000" />
+    <option name="totallyTimeSpent" value="17660000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="1094" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2657082" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -447,8 +442,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/src/main/java/Server/ClientHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="64" selection-start-line="64" selection-end-line="64" />
+        <state relative-caret-position="480">
+          <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
