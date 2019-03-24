@@ -5,7 +5,6 @@ const socket = new WebSocket('ws://172.20.10.2:8080');
 
 // Connection opened
 socket.onopen = function(event) {
-	socket.send('This is an test!');
 };
 
 socket.addEventListener('error', function (event) {
@@ -14,6 +13,10 @@ socket.addEventListener('error', function (event) {
 
 // Listen for messages
 socket.addEventListener('message', function (event) {
+	event = JSON.parse(event.data)
+	if (event === startGame) {
+
+	}
 	console.log('Message from server ', event.data);
 });
 
@@ -28,6 +31,7 @@ let ctx;
 let timer;
 let currentPlayer = "Alex";
 let turn = "Alex";
+let username;
 
 const cardURLs = [
 "0-blue.svg",
@@ -319,26 +323,7 @@ const mockGame = [
 			{
 				type: "5",
 				color: "yellow"
-			},
-			{
-				type: "5",
-				color: "blue"
-			},{
-				type: "5",
-				color: "red"
-			},
-			{
-				type: "5",
-				color: "green"
-			},
-			{
-				type: "5",
-				color: "yellow"
-			},
-			{
-				type: "5",
-				color: "blue"
-			},
+			}
 
 		]
 	},
@@ -481,13 +466,33 @@ $(document).ready(function(){
 
 ///Home Screen Button
 	$(document).on("click", "#hostGameButton", function(){
+		if (typeof username === "undefined") {
+			$("#displayName").text("Must Log In");
+			return;
+		}
 		window.history.pushState('forward', null, './hostGame');
 		hostGame();
 	});
 
 	$(document).on("click", "#joinGameButton", function(){
+		if (typeof username === "undefined") {
+			$("#displayName").text("Must Log In");
+			return;
+		}
 		window.history.pushState('forward', null, './joinGame');
 		joinGame();
+	});
+
+	$(document).on("click", "#usernameButton", function(){
+		username = $("#username").val();
+		if (username === "") {
+			username = undefined;
+			return;
+		}
+		$(".unlockButton").css("background-color", 'gold')
+		$("#displayName").text(username)
+		$("#username").val("");
+		socket.send(username+"\n");
 	});
 
 
@@ -495,10 +500,17 @@ $(document).ready(function(){
 ///Create or join game
 	let $gameNameText = $("#gameNameText");
 	$(document).on("click", "#createRequest", function(){
+		startGame()
 		let gameName = $gameNameText.val();
 
-		/////socket
-		window.history.pushState('forward', null, './ROOMNAME-TODO');
+		let json = {
+			action : "create",
+			payload : {
+				roomId : gameName
+			}
+		}
+		socket.send(JSON.stringify(json))
+		window.history.pushState('forward', null, './' + gameName);
 
 	});
 
