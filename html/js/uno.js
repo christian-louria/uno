@@ -14,7 +14,7 @@ socket.addEventListener('error', function (event) {
 // Listen for messages
 socket.addEventListener('message', function (event) {
 	event = JSON.parse(event.data)
-	if (event === startGame) {
+	if (event === "startGame") {
 
 	}
 	console.log('Message from server ', event.data);
@@ -32,6 +32,7 @@ let timer;
 let currentPlayer = "Alex";
 let turn = "Alex";
 let username;
+let players = [];
 
 const cardURLs = [
 "0-blue.svg",
@@ -190,8 +191,6 @@ class Player{
 	}
 
 }
-
-let players = [];
 
 function index(){
 	$("#mainContent").load("home.html");
@@ -429,7 +428,7 @@ $(document).ready(function(){
 	window.history.pushState('forward', null, './index');
 	if (window.history && window.history.pushState) {
     $(window).on('popstate', function() {
-      url = window.location.href
+      url = window.location.href;
       if (url.includes("index")){
       	index();
       }
@@ -489,8 +488,8 @@ $(document).ready(function(){
 			username = undefined;
 			return;
 		}
-		$(".unlockButton").css("background-color", 'gold')
-		$("#displayName").text(username)
+		$(".unlockButton").css("background-color", 'gold');
+		$("#displayName").text(username);
 		$("#username").val("");
 		socket.send(username+"\n");
 	});
@@ -500,7 +499,7 @@ $(document).ready(function(){
 ///Create or join game
 	let $gameNameText = $("#gameNameText");
 	$(document).on("click", "#createRequest", function(){
-		startGame()
+		startGame();
 		let gameName = $gameNameText.val();
 
 		let json = {
@@ -508,8 +507,8 @@ $(document).ready(function(){
 			payload : {
 				roomId : gameName
 			}
-		}
-		socket.send(JSON.stringify(json))
+		};
+		socket.send(JSON.stringify(json));
 		window.history.pushState('forward', null, './' + gameName);
 
 	});
@@ -599,7 +598,7 @@ function drawBoard(){
 
 	//clear background
 	let background = document.getElementById("unoBackground.svg")
-	ctx.drawImage(background, 0, 0)
+	ctx.drawImage(background, 0, 0);
 	// ctx.fillStyle = "#FF0000";
 	// ctx.beginPath();
 	// ctx.rect(0,0, normalizedWidth, normalizedHeight);

@@ -1,62 +1,63 @@
 @import 'buttons';
 @import 'textBoxes';
 
-body{
-	background: url("../img/background/unoBackground.svg") no-repeat center center fixed;
-	-webkit-background-size: cover;
+body {
+  background: url("../img/background/unoBackground.svg") no-repeat center center fixed;
+  -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-	font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-	margin:0;
-	padding:0;
-	-webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+  font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                                   supported by Chrome and Opera */
 }
 
 
-
-#displayName{
-	color: gold;
-	font-size: 4em;
-	text-align: center;
-	font-weight: bolder;
-	-webkit-text-stroke-width: 2px;
-    -webkit-text-stroke-color: white;
-    margin-bottom: 10px;
+#displayName {
+  color: gold;
+  font-size: 4em;
+  text-align: center;
+  font-weight: bolder;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: white;
+  margin-bottom: 10px;
 }
 
-#unoTitle{
-	color: gold;
-	font-size: 10em;
-	text-align: center;
-	font-weight: bolder;
-	-webkit-text-stroke-width: 4px;
-    -webkit-text-stroke-color: white;
-    transform: rotate(-10deg);
-    margin-top: 50px;
-    letter-spacing: -10px;
-    margin-bottom: 50px;
+#unoTitle {
+  color: gold;
+  font-size: 10em;
+  text-align: center;
+  font-weight: bolder;
+  -webkit-text-stroke-width: 4px;
+  -webkit-text-stroke-color: white;
+  transform: rotate(-10deg);
+  margin-top: 50px;
+  letter-spacing: -10px;
+  margin-bottom: 50px;
 }
 
-#gameNameContainer{
-	display: grid;
-	grid-template-columns: 1fr 400px 1fr;
-	margin-bottom: 40px;
+#gameNameContainer {
+  display: grid;
+  grid-template-columns: 1fr 400px 1fr;
+  margin-bottom: 40px;
 }
 
-#gameBoard{
-	width: 100vw;
-	height: 100vh;
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
+#gameBoard {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
-#mainContent{
-	margin: 0;
+
+#mainContent {
+  margin: 0;
 }
