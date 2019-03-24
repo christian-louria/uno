@@ -86,10 +86,10 @@ public class ClientHandler extends Thread {
         try {
             // Create the new writing object and send the message on its way
             BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-            bf.write("HTTP/1.1\r\nStatus Code: 200\r\n\r\n" + json + "\r\n");
+            bf.write("HTTP/1.1 200\r\n\r\n" + json + "\r\n");
             bf.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error sending response");
         }
     }
 
