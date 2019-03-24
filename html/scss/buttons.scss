@@ -1,6 +1,10 @@
+
+.unlockButton{
+	background-color: grey;
+}
+
 .button{
 	width: 300px;
-	background-color: gold;
 	border-radius: 100px;
 	padding: 20px;
 	font-size: 3em;
@@ -13,6 +17,10 @@
     transition: all .2s ease-in-out;
     cursor: pointer;
     letter-spacing: -1px;
+}
+
+.goldButton{
+	background-color: gold;
 }
 
 .button:hover{
