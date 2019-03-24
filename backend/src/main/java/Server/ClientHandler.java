@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -51,9 +53,16 @@ public class ClientHandler extends Thread {
             JSONObject jo = null;
             BufferedReader bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 
+            String header = null;
+            while(!header.equals("")) {
+                header = bf.readLine();
+
+                if(header.contains("Sec-WebSocket-Key:"))
+                    System.out.println(header);
+            }
+
             // Until the client sends good json keep asking after alerting of bad JSON
             while(jo == null) {
-
                 try {
 
                     // read the line and try to parse the json
@@ -74,6 +83,23 @@ public class ClientHandler extends Thread {
             e.printStackTrace();
             return null;
         }
+    }
+
+
+    /**
+     * Generates the necessary headers for the responses
+     * @return String containing the beginning responses
+     */
+    private String getWebSocketResponseHeaders() {
+
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("HTTP/1.1 101 Ok\r\n");
+        buffer.append("Upgrade: websocket\r\n");
+        buffer.append("Connection: upgrade\r\n");
+
+        MessageDigest md = new MessageDigest.getInstance("SHA-1");
+
+        byte[] messageDigest = md.digest();
     }
 
 
