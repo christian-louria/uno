@@ -1,7 +1,5 @@
 package Server;
 
-import GameParts.Player;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -25,7 +23,7 @@ public class Main {
 
                     // Create this user's handler and send them on their way
                     ClientHandler handler = new ClientHandler(socket, roomHashMap);
-                    handler.run();
+                    handler.start();
 
                 } catch (Exception e) {
                     e.printStackTrace();

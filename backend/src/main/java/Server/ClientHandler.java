@@ -28,6 +28,20 @@ public class ClientHandler extends Thread {
 
 
     /**
+     * Sends back a good response when successful
+     */
+    private void sendGoodResponse(){
+
+        // payload not supplied
+        JSONObject goodResp = new JSONObject();
+        goodResp.put("status", "good");
+
+        // send response
+        sendJSONString(goodResp.toString());
+    }
+
+
+    /**
      * Gets JSON from the client which will tell server what to do
      * @return JSON string
      */
@@ -70,8 +84,9 @@ public class ClientHandler extends Thread {
     private void sendJSONString(String json) {
 
         try {
+            // Create the new writing object and send the message on its way
             BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-            bf.write(json);
+            bf.write(json + "\n");
             bf.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,6 +132,9 @@ public class ClientHandler extends Thread {
             name = "user" + r.nextInt(10000);
         }
 
+        // Alert user that their name request was successful
+        sendGoodResponse();
+
         // Create their player
         this.player = new Player(name);
 
@@ -134,14 +152,13 @@ public class ClientHandler extends Thread {
             }
 
             String action;
-
             try {
 
                 // Try to get the action object in the JSON string
                 action = jo.getString("action");
+            } catch (NullPointerException | JSONException e){
 
-            } catch (NullPointerException e){
-
+                // Action was not included in the message
                 sendBadResponse("actionNotFound");
                 continue;
             }
@@ -220,7 +237,6 @@ public class ClientHandler extends Thread {
                     continue;
                 }
 
-
             } else if(action.equals("start")){
 
                 // Start game
@@ -228,14 +244,18 @@ public class ClientHandler extends Thread {
                     this.player.getRoom().startGame(this.player);
                 } catch (NotEnoughPlayersException e) {
 
+                    // The room does not have at least 2 players
                     sendBadResponse("notEnoughPlayers");
                     continue;
                 } catch (GameAlreadyStartedException e) {
 
+                    // The game is already started and cannot be started again
                     sendBadResponse("gameStartedAlready");
                     continue;
                 } catch (InsufficientPrivilegesException e) {
 
+                    // The person who tried to start the program is not
+                    // the host of the room
                     sendBadResponse("insufficientPrivileges");
                     continue;
                 }
@@ -340,7 +360,6 @@ public class ClientHandler extends Thread {
                     }
                 }
 
-
             } else {
 
                 sendBadResponse("unknownRequest");
@@ -389,14 +408,16 @@ public class ClientHandler extends Thread {
                     break;
                 }
             }
+
+            // If this is reached everything is all good
+            sendGoodResponse();
         }
 
         // Close the connection for this player
         try {
             this.socket.close();
         } catch (IOException e) {
-
-            // Shouldn't happen
+            System.err.println("Error closing socket connection");
         }
     }
 }

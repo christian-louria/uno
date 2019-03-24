@@ -18,7 +18,7 @@ public class Room {
     private Integer currentPlayer;
 
     Room(String id) {
-        this.players = new ArrayList<Player>();
+        this.players = new ArrayList<>();
         this.gameStarted = false;
         this.deck = new Deck();
         this.pile = new Pile();
@@ -58,9 +58,8 @@ public class Room {
      * @throws GameAlreadyStartedException Game is already being played
      * @throws InsufficientPrivilegesException The callee is not the host
      */
-    public synchronized void startGame(Player callee) throws NotEnoughPlayersException,
-                                    GameAlreadyStartedException,
-                                    InsufficientPrivilegesException {
+    public synchronized void startGame(Player callee)
+            throws NotEnoughPlayersException, GameAlreadyStartedException, InsufficientPrivilegesException {
 
         // If game is already started cannot call this function
         // again
