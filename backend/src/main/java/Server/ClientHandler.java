@@ -152,14 +152,13 @@ public class ClientHandler extends Thread {
             }
 
             String action;
-
             try {
 
                 // Try to get the action object in the JSON string
                 action = jo.getString("action");
+            } catch (NullPointerException | JSONException e){
 
-            } catch (NullPointerException e){
-
+                // Action was not included in the message
                 sendBadResponse("actionNotFound");
                 continue;
             }
