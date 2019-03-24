@@ -61,20 +61,20 @@ public class ClientHandler extends Thread {
 
                 BufferedReader bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 
+                // Read until we hit 2 CRLFs signaling end of headers
+                String header;
+                try {
+                    while(!(header = bf.readLine()).equals("")) {
+                        // Get the web socket secret key
+                        if(header.contains("Sec-WebSocket-Key:"))
+                            key = header.substring(header.indexOf(":") + 2);
+                    }
+                } catch (NullPointerException e) {
+                    continue;
+                }
+
                 // if its the first request handle headers
                 if(firstReq) {
-
-                    // Read until we hit 2 CRLFs signaling end of headers
-                    String header;
-                    try {
-                        while(!(header = bf.readLine()).equals("")) {
-                            // Get the web socket secret key
-                            if(header.contains("Sec-WebSocket-Key:"))
-                                key = header.substring(header.indexOf(":") + 2);
-                        }
-                    } catch (NullPointerException e) {
-                        continue;
-                    }
 
                     jo = new JSONObject();
                     continue;
