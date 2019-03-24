@@ -85,10 +85,21 @@ public class ClientHandler extends Thread {
                 try {
 
                     // read the line and try to parse the json
-                    String jsonString = bf.readLine();
-                    System.out.println(jsonString);
-                    jo = new JSONObject(jsonString);
-                    System.out.println(jo);
+                    int[] bytes = new int[50000];
+                    int byt;
+                    int i = 0;
+                    while((byt = bf.read()) != -1) {
+                        int j = byt % 4;
+                        int origByte = byt ^ j;
+                        bytes[i++] = origByte;
+                    }
+
+                    String str = "";
+                    for(int chunk : bytes)
+                        str = str.concat("" + (char)chunk);
+
+                    System.out.println(str);
+                    jo = new JSONObject(str);
 
                 } catch (JSONException | NullPointerException e) {
 
