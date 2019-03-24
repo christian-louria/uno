@@ -1,7 +1,7 @@
 //vars
 
 
-const socket = new WebSocket('ws://172.20.10.2:8080');
+const socket = new WebSocket('ws://localhost:8080');
 
 // Connection opened
 socket.onopen = function(event) {
