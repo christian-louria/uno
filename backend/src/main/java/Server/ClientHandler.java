@@ -85,7 +85,7 @@ public class ClientHandler extends Thread {
 
         try {
             BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-            bf.write(json);
+            bf.write(json + "\n");
             bf.flush();
         } catch (IOException e) {
             e.printStackTrace();
