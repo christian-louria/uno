@@ -19,7 +19,8 @@ public class Player extends Socket {
      */
     public Player( String name ) {
 
-        hand = new ArrayList<>();
+        hand = new ArrayList<Card>();
+        this.room = null;
         this.name = name;
     }
 

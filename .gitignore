@@ -1,3 +1,5 @@
+*.class
 html/scss/.sass-cache
 html/scss/*.css
 html/scss/*.css.map
+.idea/workspace.xml
