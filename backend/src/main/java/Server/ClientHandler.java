@@ -180,6 +180,8 @@ public class ClientHandler extends Thread {
         // Accept client handshake and get first secret key
         JSONObject json = getJSON(true);
 
+        sendGoodResponse(json.getString("key"));
+
         while(true){
 
             // Get JSON from the client
