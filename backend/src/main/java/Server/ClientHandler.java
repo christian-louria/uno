@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -51,9 +53,16 @@ public class ClientHandler extends Thread {
             JSONObject jo = null;
             BufferedReader bf = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 
+            String header = null;
+            while(!header.equals("")) {
+                header = bf.readLine();
+
+                if(header.contains("Sec-WebSocket-Key:"))
+                    System.out.println(header);
+            }
+
             // Until the client sends good json keep asking after alerting of bad JSON
             while(jo == null) {
-
                 try {
 
                     // read the line and try to parse the json
@@ -78,6 +87,21 @@ public class ClientHandler extends Thread {
 
 
     /**
+     * Generates the necessary headers for the responses
+     * @return String containing the beginning responses
+     */
+    private String getWebSocketResponseHeaders() {
+
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("HTTP/1.1 101 Ok\r\n");
+        buffer.append("Upgrade: websocket\r\n");
+        buffer.append("Connection: upgrade\r\n\r\n");
+
+        return buffer.toString();
+    }
+
+
+    /**
      * Sends JSON back to the client
      * @param json JSON string to sent
      */
@@ -86,7 +110,7 @@ public class ClientHandler extends Thread {
         try {
             // Create the new writing object and send the message on its way
             BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-            bf.write("HTTP/1.1 101 Ok\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ok\r\n\r\n" + json + "\r\n");
+            bf.write(getWebSocketResponseHeaders() + json + "\r\n");
             bf.flush();
         } catch (IOException e) {
             System.err.println("Error sending response");
