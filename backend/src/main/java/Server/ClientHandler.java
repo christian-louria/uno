@@ -84,6 +84,7 @@ public class ClientHandler extends Thread {
     private void sendJSONString(String json) {
 
         try {
+            // Create the new writing object and send the message on its way
             BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
             bf.write(json + "\n");
             bf.flush();
@@ -417,8 +418,7 @@ public class ClientHandler extends Thread {
         try {
             this.socket.close();
         } catch (IOException e) {
-
-            // Shouldn't happen
+            System.err.println("Error closing socket connection");
         }
     }
 }
