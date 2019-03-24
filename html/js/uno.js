@@ -5,6 +5,7 @@ const socket = new WebSocket('ws://localhost:8080');
 
 // Connection opened
 socket.onopen = function(event) {
+	console.log(event);
 };
 
 socket.addEventListener('error', function (event) {
@@ -13,7 +14,8 @@ socket.addEventListener('error', function (event) {
 
 // Listen for messages
 socket.addEventListener('message', function (event) {
-	event = JSON.parse(event.data)
+	event = JSON.parse(event.data);
+	console.log(event.data);
 	if (event === "startGame") {
 
 	}
@@ -491,7 +493,14 @@ $(document).ready(function(){
 		$(".unlockButton").css("background-color", 'gold');
 		$("#displayName").text(username);
 		$("#username").val("");
-		socket.send(username+"\n");
+		let json = JSON.stringify({
+			"action": "name",
+			"payload": {
+				"name": username
+			}
+		}) + "\n";
+		console.log(json)
+		socket.send(json);
 	});
 
 

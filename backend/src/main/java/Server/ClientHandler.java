@@ -65,6 +65,7 @@ public class ClientHandler extends Thread {
                 String header;
                 try {
                     while(!(header = bf.readLine()).equals("")) {
+
                         // Get the web socket secret key
                         if(header.contains("Sec-WebSocket-Key:"))
                             key = header.substring(header.indexOf(":") + 2);
@@ -85,7 +86,9 @@ public class ClientHandler extends Thread {
 
                     // read the line and try to parse the json
                     String jsonString = bf.readLine();
+                    System.out.println(jsonString);
                     jo = new JSONObject(jsonString);
+                    System.out.println(jo);
 
                 } catch (JSONException | NullPointerException e) {
 
